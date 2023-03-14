@@ -16,10 +16,10 @@
 
 |   涉及名词   |                             解释                             |
 | :----------: | :----------------------------------------------------------: |
-| 对抗生成网络 | 生成对抗网络（简称GAN）是非监督式学习的一种方法，透过两个神经网络相互博弈的方式进行学习。 |
-|   风格迁移   | 风格迁移是一种优化技术，主要用于获取两个图像并将它们混合在一起，以便使输出图像看起来像内容图像，但却是以风格参考图像的风格“绘制”的。 |
-|              |                                                              |
-
+| 对抗生成网络 |生成对抗网络GAN（Generative adversarial nets）[1]是由Goodfellow等人于2014年提出的基于深度学习模型的生成框架，可用于多种生成任务。包含生成网络和判别网络，生成网络的作用是生成假数据以求骗过判别网络，而判别网络的作用是判定数据是真实数据的概率，通过对生成网络和判别网络的循环训练，可以得到生成效果较好的生成器。 |
+|   风格迁移   |风格迁移指两种不同风格的图像之间的风格转换，即给出一种风格的图像，可以将任意一种风格图像转化成这个风格并尽可能保留原图信息。|
+| 生成网络（Generator）| G用于生成图片，其输入是一个随机的噪声z ，通过这个噪声生成图片，记作G ( z ) |                                                             |
+| 判别网络（Discriminator）| D用于判别一张图片是否是真实的，对应的，其输入是一整图片x，输出D ( x )表示的是图片x 为真实图片的概率。|
 
 
 #### 参考文献
@@ -30,6 +30,19 @@
 
 [3] Tumanyan, Narek, et al. "Splicing vit features for semantic appearance transfer." *Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition*. 2022.
 
+[4] Arjovsky, M., Chintala, S., & Bottou, L. (2017). Wasserstein GAN. arXiv preprint arXiv:1701.07875.
+
+[5] Mirza, M., & Osindero, S. (2014). Conditional generative adversarial nets. arXiv preprint arXiv:1411.1784.
+
+[6] Radford, A., Metz, L., & Chintala, S. (2015). Unsupervised representation learning with deep convolutional generative adversarial networks. arXiv preprint arXiv:1511.06434.
+
+[7] Zhu, J. Y., Park, T., Isola, P., & Efros, A. A. (2017). Unpaired image-to-image translation using cycle-consistent adversarial networks. In Proceedings of the IEEE international conference on computer vision (pp. 2223-2232).
+
+[8] Mao, X., Li, Q., Xie, H., Lau, R. Y., Wang, Z., & Smolley, S. P. (2017). Least squares generative adversarial networks. In Proceedings of the IEEE international conference on computer vision (pp. 2794-2802).
+
+[9] Gulrajani, I., Ahmed, F., Arjovsky, M., Dumoulin, V., & Courville, A. C. (2017). Improved training of Wasserstein GANs. In Advances in neural information processing systems (pp. 5767-5777).
+
+[10] Denton, E. L., Chintala, S., Fergus, R., & Szlam, A. (2015). Deep generative image models using a Laplacian pyramid of adversarial networks. In Advances in neural information processing systems (pp. 1486-1494).
 ### 项目概述
 
 #### 工作内容
