@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:vangogh/Create/creat_page.dart';
+import 'package:vangogh/Home/home_page.dart';
+import 'package:vangogh/My/my_page.dart';
 
 void main() => runApp(const MyApp());
 
@@ -31,21 +34,14 @@ class MyStatefulWidget extends StatefulWidget {
 
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Home',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 1: Business',
-      style: optionStyle,
-    ),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
+    // Text(
+    //   'Index 0: Home',
+    //   style: optionStyle,
+    // ),
+    HomePage(),
+    CreatePage(),
+    MyPage(),
   ];
 
   void _onItemTapped(int index) {
