@@ -28,14 +28,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.purple[50] ,//添加淡紫色背景
-        leading: IconButton(
-          //导航返回按钮
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
       body: Container(
         color: Colors.purple[50], //添加淡紫色背景
         padding: EdgeInsets.all(20.0),
@@ -45,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             // Logo
             Padding(
-              padding: EdgeInsets.only(bottom: 20.0),
+              padding: EdgeInsets.only(bottom: 20.0,top: 20.0),
               child: Image.asset(
                 'assets/images_g/logo1.jpg',
                 height: 100,
@@ -142,8 +134,11 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
 
-            // Agreement
-            SizedBox(height: 80.0),
+
+            //Agreement
+            SizedBox(
+              height: 90.0,
+            ),
             Row(
               children: [
                 Checkbox(
