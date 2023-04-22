@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -9,157 +8,161 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  late final String _verificationCode; // 声明一个私有变量用于存储验证码
 
-  @override
-  void initState() {
-    super.initState();
-    _verificationCode = _generateVerificationCode();
-  }
+  final GlobalKey _formKey = GlobalKey<FormState>();
+  Color _eyeColor = Colors.grey;
+  late String _phone, _password;
+  bool _isObscure = true;
 
-// 静态方法用于生成随机四位数的验证码
-  static String _generateVerificationCode() {
-    final random = Random();
-    return '${random.nextInt(9000) + 1000}'; // 生成四位数的随机数字
-  }
-
-  //TODO: 1. 处理光标好下划线不匹配问题
-  //TODO: 2. 删除验证码部分，到时候在注册页面再使用
-  //TODO: 3. 优化在输入内容时，会出现底部溢出的问题
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Colors.purple[50], //添加淡紫色背景
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+      body: Form(
+        key: _formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        child: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           children: [
-            // Logo
-            const Padding(
-              padding: EdgeInsets.only(bottom: 20.0, top: 20.0),
-              child: /*Image.asset(
-                'assets/images/logo1.jpg',
-                height: 100,
-              ),*/
-                  Text("欢迎登录",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 30,
-                        color: Colors.black,
-                      )),
-            ),
-
-            // Phone number
-            Row(
-              children: const [
-                Icon(Icons.account_circle_outlined), //添加icon
-                SizedBox(width: 10),
-                Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      labelText: '请输入电话号码',
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10.0),
-
-            // Password
-            Row(
-              children: const [
-                Icon(Icons.lock_clock_outlined), //添加icon
-                SizedBox(width: 10),
-                Expanded(
-                  child: TextField(
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      labelText: '请输入密码',
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10.0),
-
-            // Verification code
-            Row(
-              children: [
-                const Icon(Icons.admin_panel_settings_outlined),
-                const SizedBox(width: 10),
-                const Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      labelText: '请输入验证码',
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 20.0),
-                //Text(_generateVerificationCode()), // 显示随机生成的验证码
-                // Text(_verificationCode), // 显示验证码
-                ElevatedButton(
-                  onPressed: () {}, // 显示随机生成的验证码
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.purple[100]),
-                  child: Text(_generateVerificationCode()),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10.0),
-
-            // Forgot password
-            Align(
-              alignment: Alignment.centerRight,
-              child: TextButton(
-                onPressed: () {},
-                child: const Text('忘记密码?'),
-              ),
-            ),
-
-            // Login button
-            const SizedBox(height: 15.0),
-            Container(
-              height: 40,
-              margin: const EdgeInsets.fromLTRB(90, 0, 90, 0),
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xbfff5773)),
-                child: const Text('登录'), //按钮颜色为红色
-              ),
-            ),
-
-            // Register button
-            const SizedBox(height: 10.0),
-            Container(
-              height: 40,
-              margin: const EdgeInsets.fromLTRB(90, 0, 90, 0),
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xbfff5773),
-                ),
-                child: const Text('新用户注册'), //按钮颜色为红色
-              ),
-            ),
-
-            //Agreement
-            const SizedBox(
-              height: 90.0,
-            ),
-            Row(
-              children: [
-                Checkbox(
-                  value: false,
-                  onChanged: (value) {},
-                  shape: const CircleBorder(),
-                ),
-                const Text('我已阅读并同意用户服务协议和隐私政策'),
-              ],
-            ),
+            const SizedBox(height: kToolbarHeight), // 距离顶部一个工具栏的高度
+            buildTitle(), // 欢迎登录
+            const SizedBox(height: 50),
+            buildPhoneTextField(), // 输入手机号
+            const SizedBox(height: 30),
+            buildPasswordTextField(context), // 输入密码
+            buildForgetPasswordText(context), // 忘记密码
+            const SizedBox(height: 50),
+            buildLoginButton(context), // 登录按钮
+            const SizedBox(height: 30),
+            buildRegisterText(context), // 注册
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildRegisterText(context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('没有账号?'),
+            GestureDetector(
+              child: const Text('点击注册', style: TextStyle(color: Colors.green)),
+              onTap: () {
+                print("点击注册");
+              },
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildLoginButton(BuildContext context) {
+    return Align(
+      child: SizedBox(
+        height: 45,
+        width: 270,
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(40, 0, 40, 0),
+          child: ElevatedButton(
+            style: ButtonStyle(
+                // 设置圆角
+                shape: MaterialStateProperty.all(const StadiumBorder(
+                    side: BorderSide(style: BorderStyle.none)))),
+            child:
+                Text('登录', style: Theme.of(context).primaryTextTheme.headline6),
+            onPressed: () {
+              // 表单校验通过才会继续执行
+              if ((_formKey.currentState as FormState).validate()) {
+                (_formKey.currentState as FormState).save();
+                //TODO 执行登录方法
+                print('phone: $_phone, password: $_password');
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildForgetPasswordText(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: TextButton(
+          onPressed: () {
+            // Navigator.pop(context);
+            print("忘记密码");
+          },
+          child: const Text("忘记密码？",
+              style: TextStyle(fontSize: 14, color: Colors.grey)),
+        ),
+      ),
+    );
+  }
+
+  Widget buildPasswordTextField(context) {
+    return TextFormField(
+      obscureText: _isObscure,
+      onSaved: (value) => _password = value!,
+      validator: (value) {
+        //bool status = ValidatorUtils.isMobileExact(value!);
+        if (value == null || value.isEmpty) {
+          return '密码不能为空';
+        }
+        if (value.length < 6) {
+          return '密码长度不能小于6位';
+        }
+      },
+      decoration: InputDecoration(
+        icon: Icon(Icons.lock_clock_outlined),
+        hintText: "请输入密码",
+        suffixIcon: IconButton(
+          icon: Icon(
+            Icons.remove_red_eye,
+            color: _eyeColor,
+          ),
+          onPressed: () {
+            // 修改 state 内部变量, 且需要界面内容更新, 需要使用 setState()
+            setState(() {
+              _isObscure = !_isObscure;
+              _eyeColor = (_isObscure
+                  ? Colors.grey
+                  : Theme.of(context).iconTheme.color)!;
+            });
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget buildPhoneTextField() {
+    return TextFormField(
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return '手机号不能为空';
+        }
+      },
+      decoration: InputDecoration(
+        icon: Icon(Icons.account_circle_outlined),
+        hintText: "请输入手机号",
+      ),
+    );
+  }
+
+  Widget buildTitle() {
+    return const Padding(
+      padding: EdgeInsets.only(bottom: 20.0, top: 20.0),
+      child: Text(
+        "欢迎登录",
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: 30,
+          color: Colors.black,
         ),
       ),
     );
