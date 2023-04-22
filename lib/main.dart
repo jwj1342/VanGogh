@@ -9,7 +9,7 @@ void main() => runApp(const MyApp());
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  static const String _title = 'Flutter Code Sample';
+  static const String _title = 'Van Gogh';
 
   @override
   Widget build(BuildContext context) {
