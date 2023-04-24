@@ -1,8 +1,52 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
-class CreatePage extends StatelessWidget {
+class CreatePage extends StatefulWidget {
   const CreatePage({super.key});
+
+  @override
+  _CreatePageState createState() => _CreatePageState();
+}
+
+class _CreatePageState extends State<CreatePage> {
+  File? _image;
+  List<Widget> _imageWidgets = [];
+  Future<void> _getImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+        _uploadImage(_image!);
+      }
+    });
+  }
+
+  Future<void> _uploadImage(File imageFile) async {
+    print('开始上传图片：${imageFile.path}');
+    var request = http.Request(
+        'POST',
+        Uri.parse(
+            'https://blur-test-vangogh-xxbriegcgt.cn-hangzhou.fcapp.run/test'));
+    List<int> imageBytes = await imageFile.readAsBytes();
+    var headers = {'Content-Type': 'image/jpeg'};
+    request.bodyBytes = imageBytes;
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      List<int> bytes = await response.stream.toBytes();
+      setState(() {
+        _imageWidgets.add(Image.memory(Uint8List.fromList(bytes)));
+      });
+    } else {
+      print(response.reasonPhrase);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,11 +95,13 @@ class CreatePage extends StatelessWidget {
                   onPress: () {},
                   text: "已发布",
                 ),
+                //TODO:1.这个地方的流式布局会导致边界溢出，需要处理
+                //TODO：2.这个不要单使用流式布局而是使用类似照片墙的效果
                 Wrap(
                   //通过流式布局排列图片
                   spacing: 2,
                   runSpacing: 5,
-                  children: <Widget>[],
+                  children: _imageWidgets,
                 )
               ],
             ),
@@ -65,16 +111,21 @@ class CreatePage extends StatelessWidget {
       floatingActionButton: //加号
           FloatingActionButton(
         backgroundColor: Colors.orangeAccent,
-        onPressed: () {},
+        onPressed: () {
+          _getImage();
+        },
         child: IconButton(
           icon: const Icon(Icons.add),
-          onPressed: () {},
+          onPressed: () {
+            _getImage();
+          },
         ),
       ),
     );
   }
 }
 
+//三个按钮的样式被封装在下面这个Widget中
 class CreatedSelectButtom extends StatelessWidget {
   const CreatedSelectButtom({
     super.key,
@@ -84,6 +135,7 @@ class CreatedSelectButtom extends StatelessWidget {
 
   final VoidCallback onPress;
   final String text;
+
   @override
   Widget build(BuildContext context) {
     return Container(
