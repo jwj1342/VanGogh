@@ -1,19 +1,21 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 
 class CreatePage extends StatefulWidget {
   const CreatePage({super.key});
+
   @override
   _CreatePageState createState() => _CreatePageState();
 }
 
 class _CreatePageState extends State<CreatePage> {
   File? _image;
-
+  List<Widget> _imageWidgets = [];
   Future<void> _getImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -27,15 +29,23 @@ class _CreatePageState extends State<CreatePage> {
 
   Future<void> _uploadImage(File imageFile) async {
     print('开始上传图片：${imageFile.path}');
-    // 这里自定义上传逻辑
-    var request = http.MultipartRequest('POST', Uri.parse(''));
-    request.files
-        .add(await http.MultipartFile.fromPath('file', imageFile.path));
-    var res = await request.send();
-    print("状态码:");
-    print(res.statusCode);
-    print("响应体:");
-    print(await res.stream.bytesToString());
+    var request = http.Request(
+        'POST',
+        Uri.parse(
+            'https://blur-test-vangogh-xxbriegcgt.cn-hangzhou.fcapp.run/test'));
+    List<int> imageBytes = await imageFile.readAsBytes();
+    var headers = {'Content-Type': 'image/jpeg'};
+    request.bodyBytes = imageBytes;
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      List<int> bytes = await response.stream.toBytes();
+      setState(() {
+        _imageWidgets.add(Image.memory(Uint8List.fromList(bytes)));
+      });
+    } else {
+      print(response.reasonPhrase);
+    }
   }
 
   @override
@@ -85,11 +95,13 @@ class _CreatePageState extends State<CreatePage> {
                   onPress: () {},
                   text: "已发布",
                 ),
+                //TODO:1.这个地方的流式布局会导致边界溢出，需要处理
+                //TODO：2.这个不要单使用流式布局而是使用类似照片墙的效果
                 Wrap(
                   //通过流式布局排列图片
                   spacing: 2,
                   runSpacing: 5,
-                  children: <Widget>[],
+                  children: _imageWidgets,
                 )
               ],
             ),
@@ -99,16 +111,21 @@ class _CreatePageState extends State<CreatePage> {
       floatingActionButton: //加号
           FloatingActionButton(
         backgroundColor: Colors.orangeAccent,
-        onPressed: () {},
+        onPressed: () {
+          _getImage();
+        },
         child: IconButton(
           icon: const Icon(Icons.add),
-          onPressed: () {},
+          onPressed: () {
+            _getImage();
+          },
         ),
       ),
     );
   }
 }
 
+//三个按钮的样式被封装在下面这个Widget中
 class CreatedSelectButtom extends StatelessWidget {
   const CreatedSelectButtom({
     super.key,
@@ -118,6 +135,7 @@ class CreatedSelectButtom extends StatelessWidget {
 
   final VoidCallback onPress;
   final String text;
+
   @override
   Widget build(BuildContext context) {
     return Container(

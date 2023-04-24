@@ -8,7 +8,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   final GlobalKey _formKey = GlobalKey<FormState>();
   Color _eyeColor = Colors.grey;
   late String _phone, _password;
@@ -72,8 +71,8 @@ class _LoginPageState extends State<LoginPage> {
                 // 设置圆角
                 shape: MaterialStateProperty.all(const StadiumBorder(
                     side: BorderSide(style: BorderStyle.none)))),
-            child:
-                Text('登录', style: Theme.of(context).primaryTextTheme.headline6),
+            child: Text('登录',
+                style: Theme.of(context).primaryTextTheme.titleLarge),
             onPressed: () {
               // 表单校验通过才会继续执行
               if ((_formKey.currentState as FormState).validate()) {
@@ -147,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
           return '手机号不能为空';
         }
       },
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         icon: Icon(Icons.account_circle_outlined),
         hintText: "请输入手机号",
       ),
@@ -155,16 +154,16 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget buildTitle() {
-    return const Padding(
-      padding: EdgeInsets.only(bottom: 20.0, top: 20.0),
-      child: Text(
-        "欢迎登录",
-        textAlign: TextAlign.center,
-        style: TextStyle(
-          fontSize: 30,
-          color: Colors.black,
-        ),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20.0, top: 20.0),
+      child: Image.asset('assets/Logo/LoginPageLogoPNG.png'),
+      // child: Text(
+      //   "欢迎登录",
+      //   textAlign: TextAlign.center,
+      //   style: TextStyle(
+      //     fontSize: 30,
+      //     color: Colors.black,
+      //   ),
     );
   }
 }
