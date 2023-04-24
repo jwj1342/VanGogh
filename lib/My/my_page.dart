@@ -27,7 +27,8 @@ class MyPage extends StatelessWidget {
               children: [
                 const CircleAvatar(
                   radius: 50,
-                  backgroundImage: AssetImage('assets/avatar.jpg'), // 设置头像图片
+                  backgroundImage:
+                      AssetImage('assets/images/placeholder.jpg'), // 设置头像图片
                 ),
                 const SizedBox(height: 8.0),
                 const Text(

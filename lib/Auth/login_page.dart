@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vangogh/Auth/forgetPassword_page.dart';
 import 'package:vangogh/Auth/register_page.dart';
-import 'package:vangogh/Home/home_page.dart';
+import 'package:vangogh/main.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -28,12 +28,18 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             const SizedBox(height: kToolbarHeight), // 距离顶部一个工具栏的高度
             SafeArea(
-                child:GestureDetector(
-                  child: const Text('随便看看',style: TextStyle(color: Colors.blue),),
-                  onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) =>const HomePage()));
-                  },
-                )),
+                child: GestureDetector(
+              child: const Text(
+                '随便看看',
+                style: TextStyle(color: Colors.blue),
+              ),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const MyStatefulWidget()));
+              },
+            )),
             //buildSkip(),//随便看看
             buildTitle(), // 欢迎登录
             const SizedBox(height: 40),
@@ -62,10 +68,12 @@ class _LoginPageState extends State<LoginPage> {
             GestureDetector(
               child: const Text('点击注册', style: TextStyle(color: Colors.blue)),
               onTap: () {
-                Future.delayed(Duration(milliseconds: 500),(){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) =>const RegisterPage()));
+                Future.delayed(Duration(milliseconds: 500), () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const RegisterPage()));
                 });
-
               },
             )
           ],
@@ -95,6 +103,10 @@ class _LoginPageState extends State<LoginPage> {
                 (_formKey.currentState as FormState).save();
                 //TODO 执行登录方法
                 print('phone: $_phone, password: $_password');
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const MyStatefulWidget()));
               }
             },
           ),
@@ -109,10 +121,10 @@ class _LoginPageState extends State<LoginPage> {
       child: Align(
         alignment: Alignment.centerRight,
         child: TextButton(
-          onPressed:(){
+          onPressed: () {
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return  ForgetPasswordPage();//要跳转的页面
-                  }));
+              return ForgetPasswordPage(); //要跳转的页面
+            }));
           },
           child: const Text("忘记密码？",
               style: TextStyle(fontSize: 14, color: Colors.blue)),
@@ -158,6 +170,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget buildPhoneTextField() {
     return TextFormField(
+      onSaved: (value) => _phone = value!,
       validator: (value) {
         if (value == null || value.isEmpty) {
           return '手机号不能为空';

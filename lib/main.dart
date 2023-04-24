@@ -13,6 +13,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isLoggedIn = false;
     return MaterialApp(
       title: _title,
       theme: ThemeData(
@@ -21,8 +22,19 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.blueGrey, // 设置背景色
         ),
       ),
-      home: const MyStatefulWidget(),
+      home: _handleCurrentScreen(isLoggedIn),
     );
+  }
+
+  Widget _handleCurrentScreen(bool isLoggedIn) {
+    // 根据当前登录状态决定显示的页面
+    // 这里可以通过你的登录逻辑来判断用户是否已登录
+    if (isLoggedIn) {
+      return const MyStatefulWidget();
+    } else {
+      // 未登录，跳转到登录页
+      return LoginPage();
+    }
   }
 }
 
@@ -36,10 +48,11 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   int _selectedIndex = 0;
   static const List<Widget> _widgetOptions = <Widget>[
+    //LoginPage(),
     HomePage(),
     CreatePage(),
     MyPage(),
-    LoginPage(),
+    //LoginPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -72,12 +85,12 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             label: '我的',
             backgroundColor: Color.fromRGBO(173, 170, 196, 1),
           ),
-          BottomNavigationBarItem(
-            //这个登录的几面接口仅供开发使用，最后会移除。
-            icon: Icon(Icons.login),
-            label: '登录',
-            backgroundColor: Colors.red,
-          ),
+          // BottomNavigationBarItem(
+          //   //这个登录的几面接口仅供开发使用，最后会移除。
+          //   icon: Icon(Icons.login),
+          //   label: '登录',
+          //   backgroundColor: Colors.red,
+          // ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.black,
