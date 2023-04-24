@@ -62,7 +62,10 @@ class _LoginPageState extends State<LoginPage> {
             GestureDetector(
               child: const Text('点击注册', style: TextStyle(color: Colors.blue)),
               onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) =>const RegisterPage()));
+                Future.delayed(Duration(milliseconds: 500),(){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) =>const RegisterPage()));
+                });
+
               },
             )
           ],

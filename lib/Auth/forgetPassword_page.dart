@@ -1,9 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
-
-
 
 class ForgetPasswordPage extends StatefulWidget {
   const ForgetPasswordPage({Key? key}) : super(key: key);
@@ -15,16 +12,16 @@ class ForgetPasswordPage extends StatefulWidget {
 class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   final GlobalKey _formKey = GlobalKey<FormState>();
   Color _eyeColor = Colors.grey;
-  late String _phone, _password;
+  late String _phone, _password,_autoCodeText="获取验证码";
   bool _isObscure = true;
   final TextEditingController _pass = TextEditingController();
   final TextEditingController _confirmPass = TextEditingController();
 
   //final _formKey = GlobalKey<FormState>();
   TextEditingController? mController = TextEditingController();
-  bool _isCountingDown = false;
-  int _countDown = 60;
 
+  late Timer _timer;
+  int _timeCount = 60;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,6 +30,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
         key: _formKey,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: ListView(
+          shrinkWrap: true,
           padding: const EdgeInsets.symmetric(horizontal: 20),
           children: [
             const SizedBox(height: kToolbarHeight), // 距离顶部一个工具栏的高度
@@ -44,7 +42,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
             const SizedBox(height: 30),
             buildCheckPasswordTextField(context), // 确认密码
             const SizedBox(height: 30),
-            buildVerificationCode(), //验证码
+           buildVerificationCode(), //验证码
 
             const SizedBox(height: 100),
             buildLoginButton(context), // 登录
@@ -65,56 +63,26 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
       decoration: InputDecoration(
         icon: Icon(Icons.admin_panel_settings_outlined),
         hintText: ('请输入验证码'),
-        suffix: Stack(
-          children: [
-            Positioned.fill(
-              child: IgnorePointer(
-                ignoring: _isCountingDown,
-                child: InkWell(
-                  onTap: _buttonClickListen,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                      child: Text(
-                        '获取验证码',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned.fill(
-              child: Visibility(
-                visible: _isCountingDown,
-                child: Center(
-                  child: Text(
-                    '$_countDown s',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-              ),
-            ),
-          ],
+        suffix: GestureDetector(
+          child: Text(_autoCodeText,style: TextStyle(color: Colors.blue),),
+          onTap: (){
+            _startTimer();
+          },
         ),
       ),
     );
   }
-  void _buttonClickListen() {
-    setState(() {
-      _isCountingDown = true;
-    });
-    Timer.periodic(Duration(seconds: 1), (timer) {
+
+  void _startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
-        if (_countDown > 0) {
-          _countDown--;
+        if (_timeCount <= 0) {
+          _autoCodeText = '重新获取';
+          _timer.cancel();
+          _timeCount = 60;
         } else {
-          _isCountingDown = false;
-          _countDown = 60;
-          timer.cancel();
+          _timeCount -= 1;
+          _autoCodeText = "$_timeCount" + 's';
         }
       });
     });
@@ -126,18 +94,16 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
         height: 45,
         width: 270,
         child: Container(
+          // height: 40,
           margin: const EdgeInsets.fromLTRB(40, 0, 40, 0),
           child: ElevatedButton(
             style: ButtonStyle(
-                backgroundColor:  MaterialStateProperty.all(Color(0x99252323)),
+                backgroundColor: MaterialStateProperty.all(Color(0x99252323)),
                 // 设置圆角
                 shape: MaterialStateProperty.all(const StadiumBorder(
                     side: BorderSide(style: BorderStyle.none)))),
             child:
-            Text('登录', style: Theme
-                .of(context)
-                .primaryTextTheme
-                .headline6),
+                Text('登录', style: Theme.of(context).primaryTextTheme.headline6),
             onPressed: () {
               // 表单校验通过才会继续执行
               if ((_formKey.currentState as FormState).validate()) {

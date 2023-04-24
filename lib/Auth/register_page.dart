@@ -14,17 +14,18 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final GlobalKey _formKey = GlobalKey<FormState>();
   Color _eyeColor = Colors.grey;
-  late String _phone, _password;
+  late String _phone, _password,_autoCodeText="获取验证码";
   bool _isObscure = true;
   final TextEditingController _pass = TextEditingController();
   final TextEditingController _confirmPass = TextEditingController();
 
-  //final _formKey = GlobalKey<FormState>();
-  TextEditingController? mController = TextEditingController();
-  bool _isCountingDown = false;
-  int _countDown = 60;
+  TextEditingController? cController = TextEditingController();
 
-  bool _isChecked = false;//单选，用户协议
+
+  late Timer _timer;
+  int _timeCount = 60;
+
+  bool _isChecked = false; //单选，用户协议
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +47,7 @@ class _RegisterPageState extends State<RegisterPage> {
             const SizedBox(height: 30),
             buildVerificationCode(), //验证码
             const SizedBox(height: 30),
-            buildAccept(context),//用户协议和隐私政策
+            buildAccept(context), //用户协议和隐私政策
             const SizedBox(height: 100),
             buildRegisterButton(context), // 注册
           ],
@@ -54,6 +55,7 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
+
   Widget buildAccept(context) {
     return Row(
       children: [
@@ -69,10 +71,13 @@ class _RegisterPageState extends State<RegisterPage> {
       ],
     );
   }
+
   Widget buildVerificationCode() {
     return TextFormField(
       onSaved: (value) {},
-      controller: mController,
+      controller: cController,
+      maxLength: 6,
+
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp("[0-9]")),
         LengthLimitingTextInputFormatter(6)
@@ -80,56 +85,26 @@ class _RegisterPageState extends State<RegisterPage> {
       decoration: InputDecoration(
         icon: Icon(Icons.admin_panel_settings_outlined),
         hintText: ('请输入验证码'),
-        suffix: Stack(
-          children: [
-            Positioned.fill(
-              child: IgnorePointer(
-                ignoring: _isCountingDown,
-                child: InkWell(
-                  onTap: _buttonClickListen,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                      child: Text(
-                        '获取验证码',
-                        style: TextStyle(color: Colors.black),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned.fill(
-              child: Visibility(
-                visible: _isCountingDown,
-                child: Center(
-                  child: Text(
-                    '$_countDown s',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-              ),
-            ),
-          ],
+        suffix: GestureDetector(
+          child: Text(_autoCodeText,style: TextStyle(color: Colors.blue),),
+          onTap: (){
+            _startTimer();
+          },
         ),
       ),
     );
   }
-  void _buttonClickListen() {
-    setState(() {
-      _isCountingDown = true;
-    });
-    Timer.periodic(Duration(seconds: 1), (timer) {
+
+  void _startTimer() {
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       setState(() {
-        if (_countDown > 0) {
-          _countDown--;
+        if (_timeCount <= 0) {
+          _autoCodeText = '重新获取';
+          _timer.cancel();
+          _timeCount = 60;
         } else {
-          _isCountingDown = false;
-          _countDown = 60;
-          timer.cancel();
+          _timeCount -= 1;
+          _autoCodeText = "$_timeCount" + 's';
         }
       });
     });
@@ -149,7 +124,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 shape: MaterialStateProperty.all(const StadiumBorder(
                     side: BorderSide(style: BorderStyle.none)))),
             child:
-                Text('注册', style: Theme.of(context).primaryTextTheme.headline6),
+            Text('注册', style: Theme
+                .of(context)
+                .primaryTextTheme
+                .headline6),
             onPressed: () {
               // 表单校验通过才会继续执行
               if ((_formKey.currentState as FormState).validate()) {
@@ -192,7 +170,10 @@ class _RegisterPageState extends State<RegisterPage> {
               _isObscure = !_isObscure;
               _eyeColor = (_isObscure
                   ? Colors.grey
-                  : Theme.of(context).iconTheme.color)!;
+                  : Theme
+                  .of(context)
+                  .iconTheme
+                  .color)!;
             });
           },
         ),
@@ -228,7 +209,10 @@ class _RegisterPageState extends State<RegisterPage> {
               _isObscure = !_isObscure;
               _eyeColor = (_isObscure
                   ? Colors.grey
-                  : Theme.of(context).iconTheme.color)!;
+                  : Theme
+                  .of(context)
+                  .iconTheme
+                  .color)!;
             });
           },
         ),
