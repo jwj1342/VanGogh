@@ -13,7 +13,7 @@ class MyPage extends StatelessWidget {
             margin: const EdgeInsets.all(16.0),
             padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
-              color:const Color(0xffcce5ff),
+              color: const Color(0xffcce5ff),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.5),
@@ -39,9 +39,7 @@ class MyPage extends StatelessWidget {
                 const Text(
                   '个人简介',
                   style: TextStyle(fontSize: 16.0),
-
                   textAlign: TextAlign.center,
-
                 ),
                 const SizedBox(height: 16.0),
                 Row00(),
@@ -243,8 +241,7 @@ class Row00 extends StatelessWidget {
             SizedBox(height: 4.0),
             Text(
               '0',
-              style: TextStyle(
-                  fontSize: 18.0, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -257,8 +254,7 @@ class Row00 extends StatelessWidget {
             SizedBox(height: 4.0),
             Text(
               '0',
-              style: TextStyle(
-                  fontSize: 18.0, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -271,8 +267,7 @@ class Row00 extends StatelessWidget {
             SizedBox(height: 4.0),
             Text(
               '0',
-              style: TextStyle(
-                  fontSize: 18.0, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
           ],
         ),

@@ -32,7 +32,7 @@ class _CreatePageState extends State<CreatePage> {
     var request = http.Request(
         'POST',
         Uri.parse(
-            'https://blur-test-vangogh-xxbriegcgt.cn-hangzhou.fcapp.run/test'));
+            'http://demo-test-vangogh-xrgfpupeat.cn-hangzhou.fcapp.run/test'));
     List<int> imageBytes = await imageFile.readAsBytes();
     var headers = {'Content-Type': 'image/jpeg'};
     request.bodyBytes = imageBytes;

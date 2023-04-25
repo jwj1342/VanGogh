@@ -12,7 +12,7 @@ class ForgetPasswordPage extends StatefulWidget {
 class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   final GlobalKey _formKey = GlobalKey<FormState>();
   Color _eyeColor = Colors.grey;
-  late String _phone, _password,_autoCodeText="获取验证码";
+  late String _phone, _password, _autoCodeText = "获取验证码";
   bool _isObscure = true;
   final TextEditingController _pass = TextEditingController();
   final TextEditingController _confirmPass = TextEditingController();
@@ -22,6 +22,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
 
   late Timer _timer;
   int _timeCount = 60;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +43,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
             const SizedBox(height: 30),
             buildCheckPasswordTextField(context), // 确认密码
             const SizedBox(height: 30),
-           buildVerificationCode(), //验证码
+            buildVerificationCode(), //验证码
 
             const SizedBox(height: 100),
             buildLoginButton(context), // 登录
@@ -64,8 +65,11 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
         icon: Icon(Icons.admin_panel_settings_outlined),
         hintText: ('请输入验证码'),
         suffix: GestureDetector(
-          child: Text(_autoCodeText,style: TextStyle(color: Colors.blue),),
-          onTap: (){
+          child: Text(
+            _autoCodeText,
+            style: TextStyle(color: Colors.blue),
+          ),
+          onTap: () {
             _startTimer();
           },
         ),
@@ -102,8 +106,8 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
                 // 设置圆角
                 shape: MaterialStateProperty.all(const StadiumBorder(
                     side: BorderSide(style: BorderStyle.none)))),
-            child:
-                Text('登录', style: Theme.of(context).primaryTextTheme.headline6),
+            child: Text('登录',
+                style: Theme.of(context).primaryTextTheme.titleLarge),
             onPressed: () {
               // 表单校验通过才会继续执行
               if ((_formKey.currentState as FormState).validate()) {
