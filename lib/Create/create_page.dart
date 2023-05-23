@@ -8,7 +8,6 @@ import 'package:http/http.dart' as http;
 
 class CreatePage extends StatefulWidget {
   const CreatePage({super.key});
-
   @override
   _CreatePageState createState() => _CreatePageState();
 }
@@ -47,7 +46,24 @@ class _CreatePageState extends State<CreatePage> {
       print(response.reasonPhrase);
     }
   }
-
+  List<Widget> _colors = [
+    new Container(
+      height: 180.0,
+      color: Colors.lightBlueAccent,
+    ),
+    new Container(
+      height: 180.0,
+      color: Colors.amber,
+    ),
+    new Container(
+      height: 180.0,
+      color: Colors.deepOrangeAccent,
+    ),
+    new Container(
+      height: 180.0,
+      color: Colors.purpleAccent,
+    ),
+  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,32 +92,28 @@ class _CreatePageState extends State<CreatePage> {
               //分割线
               child: Divider(
                 color: Colors.black26,
-                thickness: 5,
+                thickness: 3,
               ),
             ),
             Wrap(
               spacing: 8,
               runSpacing: 8,
               children: <Widget>[
-                CreatedSelectButtom(
-                  onPress: () {},
-                  text: "全部",
-                ),
-                CreatedSelectButtom(
-                  onPress: () {},
-                  text: "已编辑",
-                ),
-                CreatedSelectButtom(
-                  onPress: () {},
-                  text: "已发布",
+                Container(
+                  height: 10,
                 ),
                 //TODO:1.这个地方的流式布局会导致边界溢出，需要处理
                 //TODO：2.这个不要单使用流式布局而是使用类似照片墙的效果
-                Wrap(
-                  //通过流式布局排列图片
-                  spacing: 2,
-                  runSpacing: 5,
-                  children: _imageWidgets,
+                SizedBox(
+                  height: 480,
+                  child: ListView.builder( // 后续将此处的_colors改为_imageWidgets
+                      itemCount: _colors.length,      //这里必须要指定List的长度
+                      itemBuilder:(context,index){      //需要传入两个参数，然后Builder会自动从0一直循环到最大长度
+                        return ListTile(
+                          title: _colors[index],  //每次取出index的索引对应的数据返回
+                        );
+                      },
+                  )
                 )
               ],
             ),
