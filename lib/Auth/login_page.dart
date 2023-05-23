@@ -3,6 +3,9 @@ import 'package:vangogh/Auth/forgetPassword_page.dart';
 import 'package:vangogh/Auth/register_page.dart';
 import 'package:vangogh/main.dart';
 
+import '../Common/RemoteAPI.dart';
+import '../Model/User.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -97,16 +100,21 @@ class _LoginPageState extends State<LoginPage> {
                     side: BorderSide(style: BorderStyle.none)))),
             child: Text('登录',
                 style: Theme.of(context).primaryTextTheme.titleLarge),
-            onPressed: () {
+            onPressed: ()  async {
               // 表单校验通过才会继续执行
               if ((_formKey.currentState as FormState).validate()) {
                 (_formKey.currentState as FormState).save();
                 //TODO 执行登录方法
-                print('phone: $_phone, password: $_password');
-                Navigator.push(
+                User? user = await RemoteAPI(context).login(_phone, _password);
+                if (user != null) {
+                  Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => const MyStatefulWidget()));
+                    MaterialPageRoute(builder: (context) => const MyStatefulWidget()),
+                  );
+                } else {
+                  print("登录失败");
+                }
+
               }
             },
           ),
