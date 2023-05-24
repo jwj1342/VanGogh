@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vangogh/Auth/forgetPassword_page.dart';
 import 'package:vangogh/Auth/register_page.dart';
+import 'package:vangogh/Home/home_page.dart';
 import 'package:vangogh/main.dart';
 
 import '../Common/RemoteAPI.dart';
@@ -22,7 +23,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xA6ECE8B9),
+      backgroundColor: const Color(0xfff1eecf),
       body: Form(
         key: _formKey,
         autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -107,10 +108,13 @@ class _LoginPageState extends State<LoginPage> {
                 //TODO 执行登录方法
                 User? user = await RemoteAPI(context).login(_phone, _password);
                 if (user != null) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const MyStatefulWidget()),
-                  );
+                  if (mounted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MyStatefulWidget()),
+                    );
+                  }
                 } else {
                   print("登录失败");
                 }
@@ -133,6 +137,7 @@ class _LoginPageState extends State<LoginPage> {
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
               return ForgetPasswordPage(); //要跳转的页面
             }));
+
           },
           child: const Text("忘记密码？",
               style: TextStyle(fontSize: 14, color: Colors.blue)),
