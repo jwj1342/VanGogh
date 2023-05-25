@@ -46,24 +46,6 @@ class _CreatePageState extends State<CreatePage> {
       print(response.reasonPhrase);
     }
   }
-  List<Widget> _colors = [
-    new Container(
-      height: 180.0,
-      color: Colors.lightBlueAccent,
-    ),
-    new Container(
-      height: 180.0,
-      color: Colors.amber,
-    ),
-    new Container(
-      height: 180.0,
-      color: Colors.deepOrangeAccent,
-    ),
-    new Container(
-      height: 180.0,
-      color: Colors.purpleAccent,
-    ),
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,17 +82,17 @@ class _CreatePageState extends State<CreatePage> {
               runSpacing: 8,
               children: <Widget>[
                 Container(
-                  height: 10,
+                  height: 5,
                 ),
                 //TODO:1.这个地方的流式布局会导致边界溢出，需要处理
                 //TODO：2.这个不要单使用流式布局而是使用类似照片墙的效果
                 SizedBox(
                   height: 480,
                   child: ListView.builder( // 后续将此处的_colors改为_imageWidgets
-                      itemCount: _colors.length,      //这里必须要指定List的长度
+                      itemCount: _imageWidgets.length,      //这里必须要指定List的长度
                       itemBuilder:(context,index){      //需要传入两个参数，然后Builder会自动从0一直循环到最大长度
                         return ListTile(
-                          title: _colors[index],  //每次取出index的索引对应的数据返回
+                          title: _imageWidgets[index],  //每次取出index的索引对应的数据返回
                         );
                       },
                   )
@@ -132,39 +114,6 @@ class _CreatePageState extends State<CreatePage> {
             _getImage();
           },
         ),
-      ),
-    );
-  }
-}
-
-//三个按钮的样式被封装在下面这个Widget中
-class CreatedSelectButtom extends StatelessWidget {
-  const CreatedSelectButtom({
-    super.key,
-    required this.onPress,
-    required this.text,
-  });
-
-  final VoidCallback onPress;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      //三个button
-      padding: const EdgeInsets.fromLTRB(0, 10, 4, 30),
-      child: ElevatedButton(
-        onPressed: onPress,
-        style: ButtonStyle(
-          backgroundColor:
-              MaterialStateProperty.all(CupertinoColors.inactiveGray),
-          foregroundColor: MaterialStateProperty.all(Colors.black),
-          textStyle: MaterialStateProperty.all(const TextStyle(fontSize: 14)),
-          shape: MaterialStateProperty.all(
-            const StadiumBorder(),
-          ),
-        ),
-        child: Text(text),
       ),
     );
   }
