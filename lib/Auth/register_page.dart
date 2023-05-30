@@ -91,8 +91,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 if ((_formKey.currentState as FormState).validate()) {
                   (_formKey.currentState as FormState).save();
                   //TODO 执行注册方法
-                  User? user =
-                      await RemoteAPI(context).login(_phone, _password);
+                  User? user = await RemoteAPI(context).register(_phone, _password);
                   if (user != null) {
                     if (mounted) {
                       Navigator.push(
