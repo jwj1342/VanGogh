@@ -17,6 +17,7 @@ class CreatePage extends StatefulWidget {
 class _CreatePageState extends State<CreatePage> {
   File? _image;
   List<Widget> _imageWidgets = [];
+
   Future<void> _getImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -39,6 +40,7 @@ class _CreatePageState extends State<CreatePage> {
     request.bodyBytes = imageBytes;
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
+
     if (response.statusCode == 200) {
       List<int> bytes = await response.stream.toBytes();
       setState(() {

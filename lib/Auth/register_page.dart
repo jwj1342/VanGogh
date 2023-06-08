@@ -134,7 +134,6 @@ class _RegisterPageState extends State<RegisterPage> {
               // 表单校验通过才会继续执行
               if ((_formKey.currentState as FormState).validate()) {
                 (_formKey.currentState as FormState).save();
-                //TODO 执行注册方法
                 print('phone: $_phone, password: $_password');
               }
             },
