@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:vangogh/Auth/forgetPassword_page.dart';
 import 'package:vangogh/Auth/register_page.dart';
-import 'package:vangogh/Home/home_page.dart';
 import 'package:vangogh/main.dart';
 
 import '../Common/RemoteAPI.dart';
@@ -38,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(color: Colors.blue),
               ),
               onTap: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                         builder: (context) => const MyStatefulWidget()));
@@ -105,10 +104,11 @@ class _LoginPageState extends State<LoginPage> {
               // 表单校验通过才会继续执行
               if ((_formKey.currentState as FormState).validate()) {
                 (_formKey.currentState as FormState).save();
+
                 User? user = await RemoteAPI(context).login(_phone, _password);
                 if (user != null) {
                   if (mounted) {
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                           builder: (context) => const MyStatefulWidget()),
@@ -117,7 +117,6 @@ class _LoginPageState extends State<LoginPage> {
                 } else {
                   print("登录失败");
                 }
-
               }
             },
           ),

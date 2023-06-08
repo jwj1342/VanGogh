@@ -11,22 +11,23 @@ class RemoteAPI {
 
   Future login(String username, String password) async {
     const url =
-        'https://64fb1cec-4fdb-47a6-9056-92daa6fb9ac7.mock.pstmn.io'; // 替换为实际的登录接口URL
-    final headers = {'Authorization': ' '}; // 设置请求头
+        'https://springboot-web-framework-suavkxfcpe.cn-hangzhou.fcapp.run/auth/login'; // 替换为实际的登录接口URL
+    final headers = {'Content-Type': 'application/json'}; // 设置请求头
 
     final body = {
       'username': username,
       'password': password,
     };
-
+    var jsonb = json.encoder.convert(body);
     final response =
-        await http.post(Uri.parse(url), headers: headers, body: body);
+        await http.post(Uri.parse(url), headers: headers, body: jsonb);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseBody = json.decode(response.body);
       return User.fromJson(responseBody);
       // return true;
     } else {
+      print(response.reasonPhrase);
       return null;
     }
   }
@@ -40,9 +41,9 @@ class RemoteAPI {
       'username': username,
       'password': password,
     };
-
+    var jsonb = json.encoder.convert(body);
     final response =
-        await http.post(Uri.parse(url), headers: headers, body: body);
+        await http.post(Uri.parse(url), headers: headers, body: jsonb);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseBody = json.decode(response.body);
