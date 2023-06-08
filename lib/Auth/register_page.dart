@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
-import 'package:flutter/gestures.dart';
 
 
 class RegisterPage extends StatefulWidget {
@@ -28,6 +27,9 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _isChecked = false; //单选，用户协议
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ));//透明状态栏
     return Scaffold(
       backgroundColor: const Color(0xfff1eecf),
       body: Form(
@@ -127,7 +129,7 @@ class _RegisterPageState extends State<RegisterPage> {
             Text('注册', style: Theme
                 .of(context)
                 .primaryTextTheme
-                .headline6),
+                .titleLarge),
             onPressed: () {
               // 表单校验通过才会继续执行
               if ((_formKey.currentState as FormState).validate()) {

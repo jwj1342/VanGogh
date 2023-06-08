@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class MyPage extends StatelessWidget {
   const MyPage({super.key});
@@ -112,6 +113,9 @@ class icon07 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ));//透明状态栏
     return ListTile(
       leading: const Icon(Icons.sentiment_satisfied_alt_outlined),
       title: const Text('帮助与反馈'),

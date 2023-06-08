@@ -104,7 +104,6 @@ class _LoginPageState extends State<LoginPage> {
               // 表单校验通过才会继续执行
               if ((_formKey.currentState as FormState).validate()) {
                 (_formKey.currentState as FormState).save();
-                //TODO 执行登录方法
                 User? user = await RemoteAPI(context).login(_phone, _password);
                 if (user != null) {
                   Navigator.push(
