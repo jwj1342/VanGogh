@@ -15,29 +15,35 @@ class CreatePage extends StatefulWidget {
 
 class _CreatePageState extends State<CreatePage>
     with AutomaticKeepAliveClientMixin {
-
+  //with AutomaticKeepAliveClientMixin是为了保持页面状态
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => true;//重写wantKeepAlive方法，返回true
 
   File? _image;
   List<Widget> _imageWidgets = [];
 
+  //initState()方法是初始化状态，当Widget第一次插入到Widget树时会被调用，
+  //对于每一个State对象，Flutter只会调用一次该方法，所以，通常在该方法中做一些一次性的操作，如状态初始化、订阅子树的事件通知等。
   @override
   void initState() {
     super.initState();
     _loadImageWidgets();
   }
 
+  //加载图片
   void _loadImageWidgets() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String>? imagePaths = prefs.getStringList('imagePaths');
+    SharedPreferences prefs = await SharedPreferences.getInstance();//获取SharedPreferences实例
+    List<String>? imagePaths = prefs.getStringList('imagePaths');//获取图片路径
     if (imagePaths != null) {
       setState(() {
         _imageWidgets = imagePaths.map((path) => Image.file(File(path))).toList();
+        //将图片路径转换为图片
+        //map()方法是将一个集合中的每一个元素都映射成一个新的元素，最终返回一个新的集合。
       });
     }
   }
 
+  //dispose()方法是销毁状态，当State对象从树中被移除时，会调用此回调。
   @override
   void dispose() {
     _saveImageWidgets();
@@ -46,11 +52,12 @@ class _CreatePageState extends State<CreatePage>
 
   void _saveImageWidgets() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> imagePaths = _imageWidgets
-        .map((image) => (image as Image).image as FileImage)
-        .map((fileImage) => fileImage.file.path)
-        .toList();
-    prefs.setStringList('imagePaths', imagePaths);
+    List<String> imagePaths = _imageWidgets//获取图片路径
+        .map((image) => (image as Image).image as FileImage)//将图片转换为FileImage
+        .map((fileImage) => fileImage.file.path)//获取图片路径
+        .toList();//转换为List
+    //上面的代码是为了将图片路径转换为List<String>类型
+    prefs.setStringList('imagePaths', imagePaths);//保存图片路径
   }
 
   Future<void> _getImage() async {
