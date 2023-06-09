@@ -25,6 +25,9 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ));//透明状态栏
     return Scaffold(
       backgroundColor: const Color(0xfff1eecf),
       body: Form(
@@ -62,12 +65,12 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
         LengthLimitingTextInputFormatter(6)
       ],
       decoration: InputDecoration(
-        icon: Icon(Icons.admin_panel_settings_outlined),
+        icon: const Icon(Icons.admin_panel_settings_outlined),
         hintText: ('请输入验证码'),
         suffix: GestureDetector(
           child: Text(
             _autoCodeText,
-            style: TextStyle(color: Colors.blue),
+            style: const TextStyle(color: Colors.blue),
           ),
           onTap: () {
             _startTimer();
@@ -78,7 +81,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (_timeCount <= 0) {
           _autoCodeText = '重新获取';
