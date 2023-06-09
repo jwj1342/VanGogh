@@ -10,22 +10,28 @@ class _MyPageState extends State<MyPage> {
   int _favoriteCount = 0;
   int _likeCount = 0;
 
-  Future<int> _fetchFollowerCount() async {
+  Future<String> _fetchFollowerCount() async {
     // TODO: 异步请求获取关注数
     await Future.delayed(Duration(seconds: 1));
-    return 100;
+    return '100';
   }
 
-  Future<int> _fetchFavoriteCount() async {
+  Future<String> _fetchFavoriteCount() async {
     // TODO: 异步请求获取收藏数
     await Future.delayed(Duration(seconds: 1));
-    return 200;
+    return '200';
   }
 
-  Future<int> _fetchLikeCount() async {
+  Future<String> _fetchLikeCount() async {
     // TODO: 异步请求获取点赞数
     await Future.delayed(Duration(seconds: 1));
-    return 300;
+    return '300';
+  }
+
+  Future<String> _uploadAvatar() async {
+    // TODO: 用户上传图片，并返回 URL 地址
+    await Future.delayed(Duration(seconds: 1));
+    return 'https://cdn.example.com/user/avatar.png';
   }
 
   @override
@@ -35,8 +41,8 @@ class _MyPageState extends State<MyPage> {
       body: Column(
         children: [
           Container(
-            margin: const EdgeInsets.all(16.0),
-            padding: const EdgeInsets.all(16.0),
+            margin: const EdgeInsets.fromLTRB(10,35,10,0),
+            padding: const EdgeInsets.all(40.0),
             decoration: BoxDecoration(
               color:const Color(0xffcce5ff),
               boxShadow: [
@@ -52,7 +58,8 @@ class _MyPageState extends State<MyPage> {
               children: [
                 const CircleAvatar(
                   radius: 50,
-                  backgroundImage: AssetImage('assets/avatar.jpg'),
+                  backgroundImage: AssetImage('assets/images/placeholder.jpg'),
+                  //默认图片
                 ),
                 const SizedBox(height: 8.0),
                 const Text(
@@ -78,10 +85,12 @@ class _MyPageState extends State<MyPage> {
             ),
           ),
           Expanded(
+          child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 0),
             child: ListView(
               children: [
-                _buildListTile(
-                    Icons.favorite, '我的收藏', () {}),
+
+                  _buildListTile(Icons.favorite, '我的收藏', () {}),
                 _buildListTile(Icons.search, '搜索', () {}),
                 _buildListTile(Icons.history, '浏览记录', () {}),
                 _buildListTile(Icons.person_outline, '个人信息', () {}),
@@ -92,6 +101,7 @@ class _MyPageState extends State<MyPage> {
                 _buildListTile(Icons.exit_to_app, '退出登录', () {}),
               ],
             ),
+          ),
           ),
         ],
       ),
@@ -106,7 +116,7 @@ class _MyPageState extends State<MyPage> {
           style: TextStyle(fontSize: 16.0),
         ),
         const SizedBox(height: 4.0),
-        FutureBuilder<int>(
+        FutureBuilder<String>(
           future: title == '关注'
               ? _fetchFollowerCount()
               : title == '收藏'
