@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
@@ -21,6 +22,7 @@ class _CreatePageState extends State<CreatePage>
 
   File? _image;
   List<Widget> _imageWidgets = [];
+
 
   //initState()方法是初始化状态，当Widget第一次插入到Widget树时会被调用，
   //对于每一个State对象，Flutter只会调用一次该方法，所以，通常在该方法中做一些一次性的操作，如状态初始化、订阅子树的事件通知等。
@@ -85,7 +87,8 @@ class _CreatePageState extends State<CreatePage>
       ),
     );
     http.StreamedResponse response = await request.send();
-    if (/*response.statusCode == 200*/true) {
+
+    if (response.statusCode == 200) {
       List<int> bytes = await response.stream.toBytes();
       setState(() {
         // _imageWidgets.add(Image.memory(Uint8List.fromList(bytes)));
@@ -99,6 +102,9 @@ class _CreatePageState extends State<CreatePage>
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ));//透明状态栏
     super.build(context); // 必须调用 super.build(context)
     return Scaffold(
       backgroundColor: const Color(0xf3a7bbae), //背景

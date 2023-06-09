@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class MyPage extends StatelessWidget {
   const MyPage({super.key});
-
+  //TODO:1. 把这个组件封装成有状态的组件
+  //TODO:2. 把这个组件进行封装
+  //TODO:3. 重命名各个组件
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,24 +27,24 @@ class MyPage extends StatelessWidget {
               ],
             ),
             child: Column(
-              children: [
-                const CircleAvatar(
+              children:  [
+                CircleAvatar(
                   radius: 50,
                   backgroundImage:
                       AssetImage('assets/images/placeholder.jpg'), // 设置头像图片
                 ),
-                const SizedBox(height: 8.0),
-                const Text(
+                SizedBox(height: 8.0),
+                Text(
                   '用户昵称',
                   style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 8.0),
-                const Text(
+                SizedBox(height: 8.0),
+                Text(
                   '个人简介',
                   style: TextStyle(fontSize: 16.0),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 16.0),
+                SizedBox(height: 16.0),
                 Row00(),
               ],
             ),
@@ -49,10 +52,10 @@ class MyPage extends StatelessWidget {
           Expanded(
             child: ListView(
               children: [
+                list_item(icon: Icons.favorite, title: Text('我的收藏')),
                 icon01(),
                 icon02(),
                 icon03(),
-
                 // 添加其他项目
                 icon04(),
                 icon05(),
@@ -110,6 +113,9 @@ class icon07 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ));//透明状态栏
     return ListTile(
       leading: const Icon(Icons.sentiment_satisfied_alt_outlined),
       title: const Text('帮助与反馈'),
@@ -215,6 +221,28 @@ class icon01 extends StatelessWidget {
     return ListTile(
       leading: const Icon(Icons.favorite),
       title: const Text('我的收藏'),
+      onTap: () {
+        // 处理点击事件
+      },
+    );
+  }
+}
+
+class list_item extends StatelessWidget {
+  const list_item({
+    super.key,
+    required IconData icon,
+    required Text title,
+  });
+
+  IconData? get icon => null;
+  String? get title => null;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title!),
       onTap: () {
         // 处理点击事件
       },

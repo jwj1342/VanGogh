@@ -3,16 +3,21 @@ import 'package:vangogh/Auth/login_page.dart';
 import 'package:vangogh/Create/create_page.dart';
 import 'package:vangogh/Home/home_page.dart';
 import 'package:vangogh/My/my_page.dart';
+import 'package:flutter/services.dart';
 
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+
   const MyApp({super.key});
 
   static const String _title = 'Van Gogh';
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ));//透明状态栏
     bool isLoggedIn = false;
     return MaterialApp(
       title: _title,
