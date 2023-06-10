@@ -1,9 +1,10 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:vangogh/Auth/forgetPassword_page.dart';
 import 'package:vangogh/Auth/register_page.dart';
-import 'package:vangogh/Home/home_page.dart';
+import 'package:vangogh/main.dart';
+
+import '../Common/RemoteAPI.dart';
+import '../Model/User.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -15,35 +16,40 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey _formKey = GlobalKey<FormState>();
   Color _eyeColor = Colors.grey;
-  late String _phone='', _password='',remoteData='',_id='',createdAt='',_url='';
-  bool isLoading = false;
+  late String _phone, _password;
   bool _isObscure = true;
-bool _isLoginSuccessful = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xA6ECE8B9),
+      backgroundColor: const Color(0xfff1eecf),
       body: Form(
         key: _formKey,
         autovalidateMode: AutovalidateMode.onUserInteraction,
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           children: [
-            //const SizedBox(height: kToolbarHeight), // 距离顶部一个工具栏的高度
+            const SizedBox(height: kToolbarHeight), // 距离顶部一个工具栏的高度
             SafeArea(
-                child:GestureDetector(
-                  child: const Text('随便看看',style: TextStyle(color: Colors.blue),),
-                  onTap: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context) =>const HomePage()));
-                  },
-                )),
+                child: GestureDetector(
+              child: const Text(
+                '随便看看',
+                style: TextStyle(color: Colors.blue),
+              ),
+              onTap: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const MyStatefulWidget()));
+              },
+            )),
             //buildSkip(),//随便看看
             buildTitle(), // 欢迎登录
             const SizedBox(height: 40),
             buildPhoneTextField(), // 输入手机号
             const SizedBox(height: 30),
             buildPasswordTextField(context), // 输入密码
-            //buildForgetPasswordText(context), // 忘记密码
+            buildForgetPasswordText(context), // 忘记密码
             const SizedBox(height: 150),
             buildLoginButton(context), // 登录按钮
             const SizedBox(height: 30),
@@ -65,10 +71,12 @@ bool _isLoginSuccessful = false;
             GestureDetector(
               child: const Text('点击注册', style: TextStyle(color: Colors.blue)),
               onTap: () {
-                Future.delayed(Duration(milliseconds: 500),(){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) =>const RegisterPage()));
+                Future.delayed(Duration(milliseconds: 500), () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const RegisterPage()));
                 });
-
               },
             )
           ],
@@ -92,16 +100,22 @@ bool _isLoginSuccessful = false;
                     side: BorderSide(style: BorderStyle.none)))),
             child: Text('登录',
                 style: Theme.of(context).primaryTextTheme.titleLarge),
-            onPressed: () {
+            onPressed: ()  async {
               // 表单校验通过才会继续执行
               if ((_formKey.currentState as FormState).validate()) {
                 (_formKey.currentState as FormState).save();
-                //发送登录请求
-                _login(_id,_phone, _password,createdAt,_url);
-                if(_isLoginSuccessful == true){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>const HomePage()));
-                }else{
 
+                User? user = await RemoteAPI(context).login(_phone, _password);
+                if (user != null) {
+                  if (mounted) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MyStatefulWidget()),
+                    );
+                  }
+                } else {
+                  print("登录失败");
                 }
               }
             },
@@ -110,41 +124,25 @@ bool _isLoginSuccessful = false;
       ),
     );
   }
-  //发送登录请求
-  Future<void> _login(String id,String phone, String password,String createdAt,String avatarUrl) async {
-    print('开始登录：$phone,$password');
-    Map<String, String> loginInfo = {'id':id,'username': phone, 'password': password,'created_at':createdAt,'avatar_url':avatarUrl};
-    var request = http.post(Uri.parse('https://8b9bac75-7481-4995-bc6f-9c4c90f7f142.mock.pstmn.io/01'),
-      body: jsonEncode(loginInfo),
-      headers: {'Content-Type': 'application/json'},
+
+  Widget buildForgetPasswordText(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: TextButton(
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+              return ForgetPasswordPage(); //要跳转的页面
+            }));
+
+          },
+          child: const Text("忘记密码？",
+              style: TextStyle(fontSize: 14, color: Colors.blue)),
+        ),
+      ),
     );
-    var response = await request;
-    if (response.statusCode == 200) {
-        _isLoginSuccessful = true;
-     // print(response.body);
-    } else {
-      print(response.reasonPhrase);
-    }
   }
-
-
-  // Widget buildForgetPasswordText(BuildContext context) {
-  //   return Padding(
-  //     padding: const EdgeInsets.only(top: 8),
-  //     child: Align(
-  //       alignment: Alignment.centerRight,
-  //       child: TextButton(
-  //         onPressed:(){
-  //           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-  //                   return  ForgetPasswordPage();//要跳转的页面
-  //                 }));
-  //         },
-  //         child: const Text("忘记密码？",
-  //             style: TextStyle(fontSize: 14, color: Colors.blue)),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Widget buildPasswordTextField(context) {
     return TextFormField(
