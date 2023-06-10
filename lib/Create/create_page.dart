@@ -16,36 +16,28 @@ class CreatePage extends StatefulWidget {
 
 class _CreatePageState extends State<CreatePage>
     with AutomaticKeepAliveClientMixin {
-  //with AutomaticKeepAliveClientMixin是为了保持页面状态
   @override
-  bool get wantKeepAlive => true;//重写wantKeepAlive方法，返回true
+  bool get wantKeepAlive => true;
 
   File? _image;
   List<Widget> _imageWidgets = [];
 
-
-  //initState()方法是初始化状态，当Widget第一次插入到Widget树时会被调用，
-  //对于每一个State对象，Flutter只会调用一次该方法，所以，通常在该方法中做一些一次性的操作，如状态初始化、订阅子树的事件通知等。
   @override
   void initState() {
     super.initState();
     _loadImageWidgets();
   }
 
-  //加载图片
   void _loadImageWidgets() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();//获取SharedPreferences实例
-    List<String>? imagePaths = prefs.getStringList('imagePaths');//获取图片路径
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? imagePaths = prefs.getStringList('imagePaths');
     if (imagePaths != null) {
       setState(() {
         _imageWidgets = imagePaths.map((path) => Image.file(File(path))).toList();
-        //将图片路径转换为图片
-        //map()方法是将一个集合中的每一个元素都映射成一个新的元素，最终返回一个新的集合。
       });
     }
   }
 
-  //dispose()方法是销毁状态，当State对象从树中被移除时，会调用此回调。
   @override
   void dispose() {
     _saveImageWidgets();
@@ -54,12 +46,11 @@ class _CreatePageState extends State<CreatePage>
 
   void _saveImageWidgets() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> imagePaths = _imageWidgets//获取图片路径
-        .map((image) => (image as Image).image as FileImage)//将图片转换为FileImage
-        .map((fileImage) => fileImage.file.path)//获取图片路径
-        .toList();//转换为List
-    //上面的代码是为了将图片路径转换为List<String>类型
-    prefs.setStringList('imagePaths', imagePaths);//保存图片路径
+    List<String> imagePaths = _imageWidgets
+        .map((image) => (image as Image).image as FileImage)
+        .map((fileImage) => fileImage.file.path)
+        .toList();
+    prefs.setStringList('imagePaths', imagePaths);
   }
 
   Future<void> _getImage() async {
@@ -68,9 +59,17 @@ class _CreatePageState extends State<CreatePage>
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
-        _uploadImage(_image!);
+        _uploadImageTEST(_image!);
       }
     });
+  }
+  //注意下面的是用于测试使用的，不是真正的上传图片
+  Future<void> _uploadImageTEST(File imageFile) async {
+    print('开始测试${imageFile.path}');
+    setState(() {
+      _imageWidgets.add(Image.memory(imageFile.readAsBytesSync()));
+    });
+    _saveImageWidgets();
   }
 
   Future<void> _uploadImage(File imageFile) async {
@@ -91,23 +90,51 @@ class _CreatePageState extends State<CreatePage>
     if (response.statusCode == 200) {
       List<int> bytes = await response.stream.toBytes();
       setState(() {
-        // _imageWidgets.add(Image.memory(Uint8List.fromList(bytes)));
-        _imageWidgets.add(Image.file(imageFile));
+        _imageWidgets.add(Image.memory(Uint8List.fromList(bytes)));
       });
-      _saveImageWidgets(); // 保存到 SharedPreferences
+      _saveImageWidgets();
     } else {
       print(response.reasonPhrase);
     }
+  }
+
+  void _showImageMenu(int index) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.share),
+              title: Text('分享'),
+              onTap: () {
+                // 处理分享逻辑
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.save),
+              title: Text('保存'),
+              onTap: () {
+                // 处理保存逻辑
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-    ));//透明状态栏
-    super.build(context); // 必须调用 super.build(context)
+    ));
+    super.build(context);
     return Scaffold(
-      backgroundColor: const Color(0xf3a7bbae), //背景
+      backgroundColor: const Color(0xf3a7bbae),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
         child: Column(
@@ -129,40 +156,37 @@ class _CreatePageState extends State<CreatePage>
                   fontWeight: FontWeight.w600),
             ),
             const SizedBox(
-              //分割线
               child: Divider(
                 color: Colors.black26,
                 thickness: 3,
               ),
             ),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: <Widget>[
-                Container(
-                  height: 5,
+            Expanded(
+              child: GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 3,
+                  mainAxisSpacing: 8,
+                  crossAxisSpacing: 8,
                 ),
-                SizedBox(
-                  height: 480,
-                  child: ListView.builder(
-                    itemCount: _imageWidgets.length,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: _imageWidgets[index],
-                      );
+                itemCount: _imageWidgets.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      _showImageMenu(index);
                     },
-                  ),
-                )
-              ],
+                    child: Container(
+                      child: _imageWidgets[index],
+                    ),
+                  );
+                },
+              ),
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.orangeAccent,
-        onPressed: () {
-          _getImage();
-        },
+        onPressed: _getImage,
         child: const Icon(Icons.add),
       ),
     );
