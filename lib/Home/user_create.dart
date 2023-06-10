@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'UserCreation.dart';
 import 'UserCreationAdapter.dart';
-
-
+import '../Common/RemoteAPI.dart';
 class UserCreate extends StatefulWidget {
   const UserCreate({Key? key});
 
@@ -17,31 +16,20 @@ class _UserCreateState extends State<UserCreate> {
   @override
   void initState() {
     super.initState();
-    // 从后端获取数据并转换为UserCreation对象
-    List<Map<String, dynamic>> backendData = [
-      {
-        'imagePath': 'assets/images/placeholder.jpg',
-        'title': '第一张作品',
-        'username': '用户1',
-        'likes': 100,
-      },
-      {
-        'imagePath': 'assets/images/placeholder.jpg',
-        'title': '第二张作品',
-        'username': '用户2',
-        'likes': 200,
-      },
-      {
-        'imagePath': 'assets/images/placeholder.jpg',
-        'title': '第三张作品',
-        'username': '用户3',
-        'likes': 300,
-      }
-    ];// 替换为实际从后端获取的数据
+    // 从后端获取数据并
+    fetchData();
+  }
+
+  Future<void> fetchData() async {
+    List<Map<String, dynamic>> backendData = await RemoteAPI(context).getRecommendation();
     items = UserCreationAdapter.adapt(backendData);
   }
+
   @override
   Widget build(BuildContext context) {
+    if(items.isEmpty) {
+      return const Center(child: CircularProgressIndicator());
+    }
     return ListView.separated(
       scrollDirection: Axis.horizontal,
       itemBuilder: (BuildContext context, int index) {
