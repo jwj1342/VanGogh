@@ -1,11 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-class MyPage extends StatelessWidget {
-  const MyPage({super.key});
-  //TODO:1. 把这个组件封装成有状态的组件
-  //TODO:2. 把这个组件进行封装
-  //TODO:3. 重命名各个组件
+class MyPage extends StatefulWidget {
+  @override
+  _MyPageState createState() => _MyPageState();
+}
+
+class _MyPageState extends State<MyPage> {
+  int _followerCount = 0;
+  int _favoriteCount = 0;
+  int _likeCount = 0;
+
+  Future<String> _fetchFollowerCount() async {
+    // TODO: 异步请求获取关注数
+    await Future.delayed(Duration(seconds: 1));
+    return '100';
+  }
+
+  Future<String> _fetchFavoriteCount() async {
+    // TODO: 异步请求获取收藏数
+    await Future.delayed(Duration(seconds: 1));
+    return '200';
+  }
+
+  Future<String> _fetchLikeCount() async {
+    // TODO: 异步请求获取点赞数
+    await Future.delayed(Duration(seconds: 1));
+    return '300';
+  }
+
+  Future<String> _uploadAvatar() async {
+    // TODO: 用户上传图片，并返回 URL 地址
+    await Future.delayed(Duration(seconds: 1));
+    return 'https://cdn.example.com/user/avatar.png';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -13,10 +41,10 @@ class MyPage extends StatelessWidget {
       body: Column(
         children: [
           Container(
-            margin: const EdgeInsets.all(16.0),
-            padding: const EdgeInsets.all(16.0),
+            margin: const EdgeInsets.fromLTRB(10,35,10,0),
+            padding: const EdgeInsets.all(40.0),
             decoration: BoxDecoration(
-              color: const Color(0xffcce5ff),
+              color:const Color(0xffcce5ff),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.5),
@@ -27,279 +55,99 @@ class MyPage extends StatelessWidget {
               ],
             ),
             child: Column(
-              children:  [
-                CircleAvatar(
+              children: [
+                const CircleAvatar(
                   radius: 50,
-                  backgroundImage:
-                      AssetImage('assets/images/placeholder.jpg'), // 设置头像图片
+                  backgroundImage: AssetImage('assets/images/placeholder.jpg'),
+                  //默认图片
                 ),
-                SizedBox(height: 8.0),
-                Text(
+                const SizedBox(height: 8.0),
+                const Text(
                   '用户昵称',
                   style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 8.0),
-                Text(
+                const SizedBox(height: 8.0),
+                const Text(
                   '个人简介',
                   style: TextStyle(fontSize: 16.0),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 16.0),
-                Row00(),
+                const SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildInfoColumn('关注', _followerCount),
+                    _buildInfoColumn('获赞', _likeCount),
+                    _buildInfoColumn('收藏', _favoriteCount),
+                  ],
+                ),
               ],
             ),
           ),
           Expanded(
+          child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 0),
             child: ListView(
               children: [
-                list_item(icon: Icons.favorite, title: Text('我的收藏')),
-                icon01(),
-                icon02(),
-                icon03(),
-                // 添加其他项目
-                icon04(),
-                icon05(),
-                icon06(),
-                icon07(),
-                icon08(),
-                icon09(),
+
+                  _buildListTile(Icons.favorite, '我的收藏', () {}),
+                _buildListTile(Icons.search, '搜索', () {}),
+                _buildListTile(Icons.history, '浏览记录', () {}),
+                _buildListTile(Icons.person_outline, '个人信息', () {}),
+                _buildListTile(Icons.security, '账号安全', () {}),
+                _buildListTile(Icons.settings, '设置', () {}),
+                _buildListTile(Icons.help_outline, '帮助与反馈', () {}),
+                _buildListTile(Icons.info_outline, '关于', () {}),
+                _buildListTile(Icons.exit_to_app, '退出登录', () {}),
               ],
             ),
+          ),
           ),
         ],
       ),
     );
   }
-}
 
-class icon09 extends StatelessWidget {
-  const icon09({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.exit_to_app),
-      title: const Text('退出登录'),
-      onTap: () {
-        // 处理点击事件
-      },
-    );
-  }
-}
-
-class icon08 extends StatelessWidget {
-  const icon08({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.info_outline),
-      title: const Text('关于'),
-      onTap: () {
-        // 处理点击事件
-      },
-    );
-  }
-}
-
-class icon07 extends StatelessWidget {
-  const icon07({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-    ));//透明状态栏
-    return ListTile(
-      leading: const Icon(Icons.sentiment_satisfied_alt_outlined),
-      title: const Text('帮助与反馈'),
-      onTap: () {
-        // 处理点击事件
-      },
-    );
-  }
-}
-
-class icon06 extends StatelessWidget {
-  const icon06({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.settings),
-      title: const Text('设置'),
-      onTap: () {
-        // 处理点击事件
-      },
-    );
-  }
-}
-
-class icon05 extends StatelessWidget {
-  const icon05({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.lock_outline),
-      title: const Text('账号安全'),
-      onTap: () {
-        // 处理点击事件
-      },
-    );
-  }
-}
-
-class icon04 extends StatelessWidget {
-  const icon04({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.perm_identity),
-      title: const Text('个人信息'),
-      onTap: () {
-        // 处理点击事件
-      },
-    );
-  }
-}
-
-class icon03 extends StatelessWidget {
-  const icon03({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.history),
-      title: const Text('浏览记录'),
-      onTap: () {
-        // 处理点击事件
-      },
-    );
-  }
-}
-
-class icon02 extends StatelessWidget {
-  const icon02({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.search),
-      title: const Text('搜索'),
-      onTap: () {
-        // 处理点击事件
-      },
-    );
-  }
-}
-
-class icon01 extends StatelessWidget {
-  const icon01({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.favorite),
-      title: const Text('我的收藏'),
-      onTap: () {
-        // 处理点击事件
-      },
-    );
-  }
-}
-
-class list_item extends StatelessWidget {
-  const list_item({
-    super.key,
-    required IconData icon,
-    required Text title,
-  });
-
-  IconData? get icon => null;
-  String? get title => null;
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(title!),
-      onTap: () {
-        // 处理点击事件
-      },
-    );
-  }
-}
-
-class Row00 extends StatelessWidget {
-  const Row00({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+  Column _buildInfoColumn(String title, int count) {
+    return Column(
       children: [
-        Column(
-          children: const [
-            Text(
-              '关注',
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 4.0),
-            Text(
-              '0',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            ),
-          ],
+        Text(
+          title,
+          style: TextStyle(fontSize: 16.0),
         ),
-        Column(
-          children: const [
-            Text(
-              '获赞',
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 4.0),
-            Text(
-              '0',
+        const SizedBox(height: 4.0),
+        FutureBuilder<String>(
+          future: title == '关注'
+              ? _fetchFollowerCount()
+              : title == '收藏'
+              ? _fetchFavoriteCount()
+              : _fetchLikeCount(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            }
+            if (snapshot.hasError) {
+              return Text('Error');
+            }
+            return Text(
+              snapshot.data.toString(),
               style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        Column(
-          children: const [
-            Text(
-              '收藏',
-              style: TextStyle(fontSize: 16.0),
-            ),
-            SizedBox(height: 4.0),
-            Text(
-              '0',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            ),
-          ],
+            );
+          },
         ),
       ],
     );
   }
+
+  ListTile _buildListTile(IconData icon, String title, VoidCallback onTap) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      onTap: onTap,
+    );
+  }
 }
+
+
+
+
