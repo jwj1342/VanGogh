@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'ArticlePage.dart';
+
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -46,7 +48,14 @@ class HomePage extends StatelessWidget {
                         scrollDirection: Axis.horizontal,
                         children: <Widget>[
                           CustomWellHorizonal(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ArticlePage(articlePath: 'assets/article/impressionist.md'),
+                                ),
+                              );
+                            },
                             imagePath: "assets/images/placeholder.jpg",
                             text: "印象派",
                           ),
