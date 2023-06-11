@@ -7,7 +7,7 @@ import 'dart:io';
 import 'package:vangogh/Model/User.dart';
 
 class RemoteAPI {
-  RemoteAPI(BuildContext context);
+  RemoteAPI(BuildContext? context);
 
   Future login(String username, String password) async {
     const url =
@@ -72,6 +72,31 @@ class RemoteAPI {
       return bytes ;
     } else {
       return null;
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getRecommendation() async {
+    try {
+      var url = Uri.parse('http://springboot-web-framework-suavkxfcpe.cn-hangzhou.fcapp.run/picture/getRecommend'); // 替换为实际的登录接口URL
+      var response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        String responseBody = utf8.decode(response.bodyBytes);
+        List<dynamic> decodedBody = json.decode(responseBody);
+        List<Map<String, dynamic>> result = [];
+        if (decodedBody is List) {
+          result = decodedBody.map((item) => item as Map<String, dynamic>).toList();
+        } else {
+          print('Invalid response body format');
+        }
+        return result;
+      } else {
+        print('Request failed with status: ${response.statusCode}');
+        return [];
+      }
+    } catch (error) {
+      print('Error occurred while sending the request: $error');
+      return [];
     }
   }
 }
