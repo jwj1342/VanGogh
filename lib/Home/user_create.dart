@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'UserCreation.dart';
 import 'UserCreationAdapter.dart';
 import '../Common/RemoteAPI.dart';
+
 class UserCreate extends StatefulWidget {
   const UserCreate({Key? key});
 
@@ -22,26 +23,29 @@ class _UserCreateState extends State<UserCreate> {
 
   Future<void> fetchData() async {
     List<Map<String, dynamic>> backendData = await RemoteAPI(context).getRecommendation();
-    items = UserCreationAdapter.adapt(backendData);
+    setState(() {
+      items = UserCreationAdapter.adapt(backendData);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    if(items.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
-    }
     return ListView.separated(
       scrollDirection: Axis.horizontal,
       itemBuilder: (BuildContext context, int index) {
-        // 计算实际索引
-        final int itemIndex = index % items.length;
-        return CustomWellHorizontalInfinite(
-          onTap: () {},
-          imagePath: items[itemIndex].imagePath,
-          text: items[itemIndex].title,
-          width: 250,
-          height: 285,
-        );
+        if (items.isEmpty) {
+          // 如果items为空，则显示加载等待的小部件
+          return const Text("加载中");
+        } else {
+          final int itemIndex = index % items.length;
+          return CustomWellHorizontalInfinite(
+            onTap: () {},
+            imagePath: items[itemIndex].imagePath,
+            text: items[itemIndex].title,
+            width: 250,
+            height: 285,
+          );
+        }
       },
       separatorBuilder: (BuildContext context, int index) {
         return const SizedBox(width: 10); // 设置项之间的间距
@@ -74,7 +78,7 @@ class CustomWellHorizontalInfinite extends StatelessWidget {
       child: Container(
         decoration: ShapeDecoration(
           image: DecorationImage(
-            image: AssetImage(imagePath),
+            image: /*AssetImage(imagePath)*/NetworkImage(imagePath),
             fit: BoxFit.fitHeight,
           ),
           shape: RoundedRectangleBorder(

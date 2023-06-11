@@ -77,7 +77,7 @@ class RemoteAPI {
 
   Future<List<Map<String, dynamic>>> getRecommendation() async {
     try {
-      var url = Uri.parse('http://127.0.0.1:9000/picture/getRecommend'); // 替换为实际的登录接口URL
+      var url = Uri.parse('http://springboot-web-framework-suavkxfcpe.cn-hangzhou.fcapp.run/picture/getRecommend'); // 替换为实际的登录接口URL
       var response = await http.get(url);
 
       if (response.statusCode == 200) {

@@ -5,9 +5,9 @@ class UserCreationAdapter {
     return data.map((item) {
       return UserCreation(
         item['likes'],
-        imagePath: item['imagePath'],
+        imagePath: item['url'],
         title: item['title'],
-        username: item['username'],);
+        username: "john",);
     }).toList();
   }
 }
