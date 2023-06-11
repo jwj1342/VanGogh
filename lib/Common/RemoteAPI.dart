@@ -7,7 +7,7 @@ import 'dart:io';
 import 'package:vangogh/Model/User.dart';
 
 class RemoteAPI {
-  RemoteAPI(BuildContext context);
+  RemoteAPI(BuildContext ? context);
 
   Future login(String username, String password) async {
     const url =
