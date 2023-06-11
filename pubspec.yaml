@@ -37,6 +37,7 @@ dependencies:
   flutter_launcher_icons: "^0.13.1"
   image_gallery_saver: ^1.7.1
   share_plus: ^7.0.1
+  flutter_markdown: ^0.6.15
 flutter_launcher_icons:
   android: true
   ios: true
