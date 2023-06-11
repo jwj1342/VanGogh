@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:vangogh/Home/user_create.dart';
 
 import 'ArticlePage.dart';
 
@@ -10,7 +11,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-    ));//透明状态栏
+    )); //透明状态栏
     return Scaffold(
         backgroundColor: const Color(0xA6ECE8B9),
         body: Padding(
@@ -81,10 +82,15 @@ class HomePage extends StatelessWidget {
                           fontSize: 20.0,
                         ),
                       )),
-                  const SizedBox(height: 200, child: Placeholder())
+                  const SizedBox(
+                    height: 285,
+                    child: UserCreate(),
+                  ),
                 ])));
   }
 }
+
+
 
 class CustomWellHorizonal extends StatelessWidget {
   const CustomWellHorizonal({
@@ -132,28 +138,3 @@ class CustomWellHorizonal extends StatelessWidget {
   }
 }
 
-// ？未来会用到的搜索框
-// class SearchAppBar extends StatelessWidget {
-//   const SearchAppBar({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       height: 32, //搜索框高度
-//       decoration: BoxDecoration(
-//         color: const Color(0xFFF2F2F2), // 搜索框背景色-灰色
-//         borderRadius: BorderRadius.circular(16), // 设置搜索框圆角
-//       ),
-//       child: Row(
-//         children: const [
-//           SizedBox(
-//             width: 32,
-//             height: 24,
-//             child:
-//                 Icon(Icons.search, size: 16, color: Color(0xFF999999)), //搜索框图标
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
