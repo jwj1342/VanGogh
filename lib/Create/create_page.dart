@@ -2,9 +2,11 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class CreatePage extends StatefulWidget {
@@ -22,6 +24,7 @@ class _CreatePageState extends State<CreatePage>
   File? _image;
   List<Widget> _imageWidgets = [];
 
+
   @override
   void initState() {
     super.initState();
@@ -34,6 +37,7 @@ class _CreatePageState extends State<CreatePage>
     if (imagePaths != null) {
       setState(() {
         _imageWidgets = imagePaths.map((path) => Image.file(File(path))).toList();
+
       });
     }
   }
@@ -110,7 +114,8 @@ class _CreatePageState extends State<CreatePage>
               title: Text('分享'),
               onTap: () {
                 // 处理分享逻辑
-                Navigator.pop(context);
+                shareImage(index);
+                //Navigator.pop(context);
               },
             ),
             ListTile(
@@ -118,7 +123,8 @@ class _CreatePageState extends State<CreatePage>
               title: Text('保存'),
               onTap: () {
                 // 处理保存逻辑
-                Navigator.pop(context);
+                saveImage(index);
+               // Navigator.pop(context);
               },
             ),
           ],
@@ -126,7 +132,47 @@ class _CreatePageState extends State<CreatePage>
       },
     );
   }
+  saveImage (int index) async {
+    try {
 
+     String imagePath="";
+      //转换为Uint8List类型的字节数组。
+      Uint8List imageBytes;
+      ByteData bytes = await rootBundle.load(imagePath);
+      imageBytes = bytes.buffer.asUint8List();
+      // 保存图片到相册
+      await ImageGallerySaver.saveImage(imageBytes);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("保存成功"),
+      ));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("保存失败: $e"),
+      ));
+    }
+  }
+  void shareImage(int index) async {
+    try {
+      //加载指定路径的文件，并将其存储在变量data中。
+      String imagePath="";
+      final data = await rootBundle.load(imagePath);
+      // 将data对象中的字节缓冲区存储在变量buffer中
+      final buffer = data.buffer;
+      await Share.shareXFiles([
+        XFile.fromData(
+          buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
+          mimeType: 'image/png',
+        ),
+      ]);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("分享成功"),
+      ));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("分享失败: $e"),
+      ));
+    }
+  }
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
