@@ -22,6 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: const ValueKey('casual_look'),
       backgroundColor: const Color(0xfff1eecf),
       body: Form(
         key: _formKey,
@@ -63,12 +64,14 @@ class _LoginPageState extends State<LoginPage> {
   Widget buildRegisterText(context) {
     return Center(
       child: Padding(
+        key: const ValueKey('no_account'),
         padding: const EdgeInsets.only(top: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text('没有账号?'),
             GestureDetector(
+              key: const ValueKey('click_register'),
               child: const Text('点击注册', style: TextStyle(color: Colors.blue)),
               onTap: () {
                 Future.delayed(Duration(milliseconds: 500), () {
@@ -87,6 +90,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget buildLoginButton(BuildContext context) {
     return Align(
+      key: const ValueKey('login_button'),
       child: SizedBox(
         height: 45,
         width: 270,
@@ -137,6 +141,7 @@ class _LoginPageState extends State<LoginPage> {
             }));
 
           },
+          key: const ValueKey('forget_password_text'),
           child: const Text("忘记密码？",
               style: TextStyle(fontSize: 14, color: Colors.blue)),
         ),
@@ -146,6 +151,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget buildPasswordTextField(context) {
     return TextFormField(
+      key: const ValueKey('password_input'),
       obscureText: _isObscure,
       onSaved: (value) => _password = value!,
       validator: (value) {
@@ -181,6 +187,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget buildPhoneTextField() {
     return TextFormField(
+      key: const ValueKey('phone_input'),
       onSaved: (value) => _phone = value!,
       validator: (value) {
         if (value == null || value.isEmpty) {
@@ -196,6 +203,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget buildTitle() {
     return Padding(
+      key: const ValueKey('welcome_login'),
       padding: const EdgeInsets.only(bottom: 20.0, top: 20.0),
       child: Image.asset('assets/Logo/LoginPageLogoPNG.png'),
       // child: Text(
