@@ -65,7 +65,24 @@ class _CreatePageState extends State<CreatePage>
     prefs.setStringList('imagePaths', imagePaths); //保存图片路径
   }
 
-
+  void _deleteImageWidgets(int index) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? imagePaths = prefs.getStringList('imagePaths'); //获取图片路径
+     try {
+       if (imagePaths != null) {
+        imagePaths.removeAt(index);
+       }
+       prefs.setStringList('imagePaths', imagePaths!);
+       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+         content: Text("删除成功"),
+       ));
+      _loadImageWidgets(); // 再次刷新以更新页面显示内容
+     } catch (e) {
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("保存失败: $e"),
+       ));
+     }
+  }
 
   Future<void> _getImage() async {
     final picker = ImagePicker();
@@ -145,26 +162,6 @@ class _CreatePageState extends State<CreatePage>
         );
       },
     );
-  }
-
-  void _deleteImageWidgets(int index) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String>? imagePaths = prefs.getStringList('imagePaths'); //获取图片路径
-    try {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("删除成功"),
-      ));
-      if (imagePaths != null) {
-        //imagePaths.removeRange(index,index); // 仅能在第一张完成删除操作，但会删除其之后的所有图片
-        imagePaths.remove(index); // 点任意一张图片都删除所有图片
-      }
-      prefs.setStringList('imagePaths', imagePaths!); //保存图片路径
-      _loadImageWidgets();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text("保存失败: $e"),
-      ));
-    }
   }
 
   @override
