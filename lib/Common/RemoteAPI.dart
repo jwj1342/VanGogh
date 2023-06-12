@@ -28,7 +28,9 @@ class RemoteAPI {
       return User.fromJson(responseBody);
       // return true;
     } else {
-      print(response.reasonPhrase);
+      if (kDebugMode) {
+        print(response.reasonPhrase);
+      }
       return null;
     }
   }
@@ -68,15 +70,21 @@ class RemoteAPI {
         if (decodedBody is List) {
           result = decodedBody.map((item) => item as Map<String, dynamic>).toList();
         } else {
-          print('Invalid response body format');
+          if (kDebugMode) {
+            print('Invalid response body format');
+          }
         }
         return result;
       } else {
-        print('Request failed with status: ${response.statusCode}');
+        if (kDebugMode) {
+          print('Request failed with status: ${response.statusCode}');
+        }
         return [];
       }
     } catch (error) {
-      print('Error occurred while sending the request: $error');
+      if (kDebugMode) {
+        print('Error occurred while sending the request: $error');
+      }
       return [];
     }
   }
@@ -131,7 +139,9 @@ class RemoteAPI {
       }
     } catch (e) {
       // 处理异常
-      print('Image upload failed with error $e.');
+      if (kDebugMode) {
+        print('Image upload failed with error $e.');
+      }
       return null;
     }
   }

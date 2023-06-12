@@ -6,11 +6,11 @@ import 'package:vangogh/Home/home_page.dart';
 import 'package:vangogh/My/my_page.dart';
 import 'package:flutter/services.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
 
-  MyApp({super.key});
+  const MyApp({super.key});
 
   static const String _title = 'Van Gogh';
 
@@ -72,8 +72,8 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = <Widget>[
-    HomePage(),
-    CreatePage(),
+    const HomePage(),
+    const CreatePage(),
     MyPage(),
   ];
 

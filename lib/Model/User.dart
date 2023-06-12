@@ -29,13 +29,13 @@ class User {
 
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['login_name'] = this.loginName;
-    data['bio?'] = this.bio;
-    data['avatar_url'] = this.avatarUrl;
-    data['following'] = this.following;
-    data['likes'] = this.likes;
-    data['collects'] = this.collects;
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['login_name'] = loginName;
+    data['bio?'] = bio;
+    data['avatar_url'] = avatarUrl;
+    data['following'] = following;
+    data['likes'] = likes;
+    data['collects'] = collects;
     return data;
   }
 

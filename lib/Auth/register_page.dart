@@ -73,7 +73,7 @@ class _RegisterPageState extends State<RegisterPage> {
             });
           },
         ),
-        Text("我已阅读并同意用户服务协议和隐私政策")
+        const Text("我已阅读并同意用户服务协议和隐私政策")
       ],
     );
   }
@@ -88,12 +88,12 @@ class _RegisterPageState extends State<RegisterPage> {
         LengthLimitingTextInputFormatter(6)
       ],
       decoration: InputDecoration(
-        icon: Icon(Icons.admin_panel_settings_outlined),
+        icon: const Icon(Icons.admin_panel_settings_outlined),
         hintText: ('请输入验证码'),
         suffix: GestureDetector(
           child: Text(
             _autoCodeText,
-            style: TextStyle(color: Colors.blue),
+            style: const TextStyle(color: Colors.blue),
           ),
           onTap: () {
             _startTimer();
@@ -104,7 +104,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (_timeCount <= 0) {
           _autoCodeText = '重新获取';
@@ -112,7 +112,7 @@ class _RegisterPageState extends State<RegisterPage> {
           _timeCount = 60;
         } else {
           _timeCount -= 1;
-          _autoCodeText = "$_timeCount" + 's';
+          _autoCodeText = "$_timeCount" 's';
         }
       });
     });
@@ -127,7 +127,7 @@ class _RegisterPageState extends State<RegisterPage> {
           margin: const EdgeInsets.fromLTRB(40, 0, 40, 0),
           child: ElevatedButton(
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Color(0x99252323)),
+                backgroundColor: MaterialStateProperty.all(const Color(0x99252323)),
                 // 设置圆角
                 shape: MaterialStateProperty.all(const StadiumBorder(
                     side: BorderSide(style: BorderStyle.none)))),
@@ -137,7 +137,9 @@ class _RegisterPageState extends State<RegisterPage> {
               // 表单校验通过才会继续执行
               if ((_formKey.currentState as FormState).validate()) {
                 (_formKey.currentState as FormState).save();
-                print('phone: $_phone, password: $_password');
+                if (kDebugMode) {
+                  print('phone: $_phone, password: $_password');
+                }
                 var user = await RemoteAPI(context).register(_phone, _password);
                 if (user != null&&user.loginName!=null&&user.runtimeType==User) {
                   final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -180,6 +182,7 @@ class _RegisterPageState extends State<RegisterPage> {
         if (value != _pass.text) {
           return '密码不匹配';
         }
+        return null;
       },
       decoration: InputDecoration(
         icon: const Icon(Icons.lock_clock_outlined),
@@ -216,6 +219,7 @@ class _RegisterPageState extends State<RegisterPage> {
         if (value.length < 6) {
           return '密码长度不能小于6位';
         }
+        return null;
       },
       decoration: InputDecoration(
         icon: const Icon(Icons.lock_clock_outlined),
@@ -245,6 +249,7 @@ class _RegisterPageState extends State<RegisterPage> {
         if (value == null || value.isEmpty) {
           return '手机号不能为空';
         }
+        return null;
       },
       decoration: const InputDecoration(
         icon: Icon(Icons.account_circle_outlined),

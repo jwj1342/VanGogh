@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vangogh/Auth/login_page.dart';
@@ -112,7 +113,7 @@ class _MyPageState extends State<MyPage> {
                     prefs.remove('Following');
                     prefs.remove('Likes');
                     prefs.remove('Favorites');
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
                   }),
                 ],
               ),
@@ -133,7 +134,9 @@ class _MyPageState extends State<MyPage> {
           return const CircularProgressIndicator();
         }
         if (snapshot.hasError) {
-          print(snapshot.error);
+          if (kDebugMode) {
+            print(snapshot.error);
+          }
           return const Text('Error',style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold));
         }
         return Text(
@@ -160,15 +163,17 @@ class _MyPageState extends State<MyPage> {
               : _fetchLikeCount(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
             if (snapshot.hasError) {
-              print(snapshot.error);
-              return Text('Error');
+              if (kDebugMode) {
+                print(snapshot.error);
+              }
+              return const Text('Error');
             }
             return Text(
               snapshot.data.toString(),
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             );
           },
         ),
