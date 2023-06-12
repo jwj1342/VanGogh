@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
@@ -69,7 +70,7 @@ class _RegisterPageState extends State<RegisterPage> {
             });
           },
         ),
-        Text("我已阅读并同意用户服务协议和隐私政策")
+        const Text("我已阅读并同意用户服务协议和隐私政策")
       ],
     );
   }
@@ -85,10 +86,10 @@ class _RegisterPageState extends State<RegisterPage> {
         LengthLimitingTextInputFormatter(6)
       ],
       decoration: InputDecoration(
-        icon: Icon(Icons.admin_panel_settings_outlined),
+        icon: const Icon(Icons.admin_panel_settings_outlined),
         hintText: ('请输入验证码'),
         suffix: GestureDetector(
-          child: Text(_autoCodeText,style: TextStyle(color: Colors.blue),),
+          child: Text(_autoCodeText,style: const TextStyle(color: Colors.blue),),
           onTap: (){
             _startTimer();
           },
@@ -98,7 +99,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (_timeCount <= 0) {
           _autoCodeText = '重新获取';
@@ -106,7 +107,7 @@ class _RegisterPageState extends State<RegisterPage> {
           _timeCount = 60;
         } else {
           _timeCount -= 1;
-          _autoCodeText = "$_timeCount" + 's';
+          _autoCodeText = "$_timeCount" 's';
         }
       });
     });
@@ -134,7 +135,9 @@ class _RegisterPageState extends State<RegisterPage> {
               // 表单校验通过才会继续执行
               if ((_formKey.currentState as FormState).validate()) {
                 (_formKey.currentState as FormState).save();
-                print('phone: $_phone, password: $_password');
+                if (kDebugMode) {
+                  print('phone: $_phone, password: $_password');
+                }
               }
             },
           ),
@@ -197,7 +200,7 @@ class _RegisterPageState extends State<RegisterPage> {
         }
       },
       decoration: InputDecoration(
-        icon: Icon(Icons.lock_clock_outlined),
+        icon: const Icon(Icons.lock_clock_outlined),
         hintText: "请输入密码",
         suffixIcon: IconButton(
           icon: Icon(
@@ -228,7 +231,7 @@ class _RegisterPageState extends State<RegisterPage> {
           return '手机号不能为空';
         }
       },
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         icon: Icon(Icons.account_circle_outlined),
         hintText: "请输入手机号",
       ),

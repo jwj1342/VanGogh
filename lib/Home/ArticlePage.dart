@@ -5,7 +5,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 class ArticlePage extends StatelessWidget {
   final String articlePath;
 
-  const ArticlePage({required this.articlePath});
+  const ArticlePage({super.key, required this.articlePath});
 
   Future<String> _loadArticle() async {
     return await rootBundle.loadString(articlePath);
@@ -16,16 +16,16 @@ class ArticlePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xA6ECE8B9), // 修改背景颜色
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           '印象派介绍',
           style: TextStyle(
             fontWeight: FontWeight.bold,
-            color: const Color(0xFF634634), // 设置导航栏文字颜色为黑色
+            color: Color(0xFF634634), // 设置导航栏文字颜色为黑色
           ),
         ),
         centerTitle: true,
         // 设置导航栏文字居中
-        backgroundColor: Color(0xffECE8B9),
+        backgroundColor: const Color(0xffECE8B9),
         //elevation: 0, // 去除底部阴影
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -45,17 +45,17 @@ class ArticlePage extends StatelessWidget {
                 data: snapshot.data.toString(),
                 styleSheet: MarkdownStyleSheet(
                   // 设置Markdown样式
-                  h1: TextStyle(
+                  h1: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF634634),
+                    color: Color(0xFF634634),
                   ),
-                  h2: TextStyle(
+                  h2: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF634634),
+                    color: Color(0xFF634634),
                   ),
-                  p: TextStyle(fontSize: 16.0),
+                  p: const TextStyle(fontSize: 16.0),
                 ),
               ),
             );

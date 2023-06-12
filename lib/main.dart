@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
       return const MyStatefulWidget();
     } else {
       // 未登录，跳转到登录页
-      return LoginPage();
+      return const LoginPage();
     }
   }
 }
@@ -57,8 +57,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = <Widget>[
     //LoginPage(),
-    HomePage(),
-    CreatePage(),
+    const HomePage(),
+    const CreatePage(),
     MyPage(),
     //LoginPage(),
   ];

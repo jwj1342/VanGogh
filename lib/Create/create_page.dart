@@ -1,5 +1,5 @@
-import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
@@ -96,7 +96,9 @@ class _CreatePageState extends State<CreatePage>
       });
       _saveImageWidgets(); // 保存到 SharedPreferences
     } else {
-      print(response.reasonPhrase);
+      if (kDebugMode) {
+        print(response.reasonPhrase);
+      }
     }
   }
 

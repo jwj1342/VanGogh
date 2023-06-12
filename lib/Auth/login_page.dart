@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:vangogh/Auth/forgetPassword_page.dart';
 import 'package:vangogh/Auth/register_page.dart';
@@ -74,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
               key: const ValueKey('click_register'),
               child: const Text('点击注册', style: TextStyle(color: Colors.blue)),
               onTap: () {
-                Future.delayed(Duration(milliseconds: 500), () {
+                Future.delayed(const Duration(milliseconds: 500), () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -98,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
           margin: const EdgeInsets.fromLTRB(40, 0, 40, 0),
           child: ElevatedButton(
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Color(0x99252323)),
+                backgroundColor: MaterialStateProperty.all(const Color(0x99252323)),
                 // 设置圆角
                 shape: MaterialStateProperty.all(const StadiumBorder(
                     side: BorderSide(style: BorderStyle.none)))),
@@ -119,7 +120,9 @@ class _LoginPageState extends State<LoginPage> {
                     );
                   }
                 } else {
-                  print("登录失败");
+                  if (kDebugMode) {
+                    print("登录失败");
+                  }
                 }
               }
             },
@@ -137,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
         child: TextButton(
           onPressed: () {
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return ForgetPasswordPage(); //要跳转的页面
+              return const ForgetPasswordPage(); //要跳转的页面
             }));
 
           },

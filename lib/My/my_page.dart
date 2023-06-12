@@ -6,31 +6,31 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
-  int _followerCount = 0;
-  int _favoriteCount = 0;
-  int _likeCount = 0;
+  final int _followerCount = 0;
+  final int _favoriteCount = 0;
+  final int _likeCount = 0;
 
   Future<String> _fetchFollowerCount() async {
     // TODO: 异步请求获取关注数
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return '100';
   }
 
   Future<String> _fetchFavoriteCount() async {
     // TODO: 异步请求获取收藏数
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return '200';
   }
 
   Future<String> _fetchLikeCount() async {
     // TODO: 异步请求获取点赞数
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return '300';
   }
 
   Future<String> _uploadAvatar() async {
     // TODO: 用户上传图片，并返回 URL 地址
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
     return 'https://cdn.example.com/user/avatar.png';
   }
 
@@ -113,7 +113,7 @@ class _MyPageState extends State<MyPage> {
       children: [
         Text(
           title,
-          style: TextStyle(fontSize: 16.0),
+          style: const TextStyle(fontSize: 16.0),
         ),
         const SizedBox(height: 4.0),
         FutureBuilder<String>(
@@ -124,14 +124,14 @@ class _MyPageState extends State<MyPage> {
               : _fetchLikeCount(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
             if (snapshot.hasError) {
-              return Text('Error');
+              return const Text('Error');
             }
             return Text(
               snapshot.data.toString(),
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             );
           },
         ),
