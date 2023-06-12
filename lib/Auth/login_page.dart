@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vangogh/Auth/forgetPassword_page.dart';
 import 'package:vangogh/Auth/register_page.dart';
 import 'package:vangogh/main.dart';
@@ -74,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
               key: const ValueKey('click_register'),
               child: const Text('点击注册', style: TextStyle(color: Colors.blue)),
               onTap: () {
-                Future.delayed(Duration(milliseconds: 500), () {
+                Future.delayed(const Duration(milliseconds: 500), () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -98,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
           margin: const EdgeInsets.fromLTRB(40, 0, 40, 0),
           child: ElevatedButton(
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Color(0x99252323)),
+                backgroundColor: MaterialStateProperty.all(const Color(0x99252323)),
                 // 设置圆角
                 shape: MaterialStateProperty.all(const StadiumBorder(
                     side: BorderSide(style: BorderStyle.none)))),
@@ -110,7 +112,14 @@ class _LoginPageState extends State<LoginPage> {
                 (_formKey.currentState as FormState).save();
 
                 User? user = await RemoteAPI(context).login(_phone, _password);
-                if (user != null) {
+                if (user != null&&user.loginName!=null) {
+                  final SharedPreferences prefs = await SharedPreferences.getInstance();
+                  prefs.setString('Username', user.loginName.toString());
+                  prefs.setString('AvatarUrl', user.avatarUrl.toString());
+                  prefs.setString('Following', user.following.toString());
+                  prefs.setString('Likes', user.likes.toString());
+                  prefs.setString('Collects', user.collects.toString());
+                  prefs.setBool('isLoggedIn', true);
                   if (mounted) {
                     Navigator.pushReplacement(
                       context,
@@ -119,7 +128,9 @@ class _LoginPageState extends State<LoginPage> {
                     );
                   }
                 } else {
-                  print("登录失败");
+                  if (kDebugMode) {
+                    print("登录失败");
+                  }
                 }
               }
             },
@@ -137,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
         child: TextButton(
           onPressed: () {
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return ForgetPasswordPage(); //要跳转的页面
+              return const ForgetPasswordPage(); //要跳转的页面
             }));
 
           },
@@ -162,9 +173,10 @@ class _LoginPageState extends State<LoginPage> {
         if (value.length < 6) {
           return '密码长度不能小于6位';
         }
+        return null;
       },
       decoration: InputDecoration(
-        icon: Icon(Icons.lock_clock_outlined),
+        icon: const Icon(Icons.lock_clock_outlined),
         hintText: "请输入密码",
         suffixIcon: IconButton(
           icon: Icon(
@@ -191,12 +203,13 @@ class _LoginPageState extends State<LoginPage> {
       onSaved: (value) => _phone = value!,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return '手机号不能为空';
+          return '手机号/用户名不能为空';
         }
+        return null;
       },
       decoration: const InputDecoration(
         icon: Icon(Icons.account_circle_outlined),
-        hintText: "请输入手机号",
+        hintText: "请输入手机号/用户名",
       ),
     );
   }
@@ -206,13 +219,6 @@ class _LoginPageState extends State<LoginPage> {
       key: const ValueKey('welcome_login'),
       padding: const EdgeInsets.only(bottom: 20.0, top: 20.0),
       child: Image.asset('assets/Logo/LoginPageLogoPNG.png'),
-      // child: Text(
-      //   "欢迎登录",
-      //   textAlign: TextAlign.center,
-      //   style: TextStyle(
-      //     fontSize: 30,
-      //     color: Colors.black,
-      //   ),
     );
   }
 }

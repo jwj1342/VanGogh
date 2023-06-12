@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
@@ -89,7 +90,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
           _timeCount = 60;
         } else {
           _timeCount -= 1;
-          _autoCodeText = "$_timeCount" + 's';
+          _autoCodeText = "$_timeCount" 's';
         }
       });
     });
@@ -105,7 +106,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
           margin: const EdgeInsets.fromLTRB(40, 0, 40, 0),
           child: ElevatedButton(
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Color(0x99252323)),
+                backgroundColor: MaterialStateProperty.all(const Color(0x99252323)),
                 // 设置圆角
                 shape: MaterialStateProperty.all(const StadiumBorder(
                     side: BorderSide(style: BorderStyle.none)))),
@@ -116,7 +117,9 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
               if ((_formKey.currentState as FormState).validate()) {
                 (_formKey.currentState as FormState).save();
                 //TODO 执行登录方法
-                print('phone: $_phone, password: $_password');
+                if (kDebugMode) {
+                  print('phone: $_phone, password: $_password');
+                }
               }
             },
           ),
@@ -138,9 +141,10 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
         if (value != _pass.text) {
           return '密码不匹配';
         }
+        return null;
       },
       decoration: InputDecoration(
-        icon: Icon(Icons.lock_clock_outlined),
+        icon: const Icon(Icons.lock_clock_outlined),
         hintText: "再次确认密码",
         suffixIcon: IconButton(
           icon: Icon(
@@ -174,9 +178,10 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
         if (value.length < 6) {
           return '密码长度不能小于6位';
         }
+        return null;
       },
       decoration: InputDecoration(
-        icon: Icon(Icons.lock_clock_outlined),
+        icon: const Icon(Icons.lock_clock_outlined),
         hintText: "请输入新密码",
         suffixIcon: IconButton(
           icon: Icon(
@@ -203,8 +208,9 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
         if (value == null || value.isEmpty) {
           return '手机号不能为空';
         }
+        return null;
       },
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         icon: Icon(Icons.account_circle_outlined),
         hintText: "请输入手机号",
       ),
