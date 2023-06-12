@@ -4,8 +4,12 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 
 class ArticlePage extends StatelessWidget {
   final String articlePath;
+  final String appBarTitle;
 
-  const ArticlePage({required this.articlePath});
+  const ArticlePage({
+    required this.articlePath,
+    required this.appBarTitle,
+  });
 
   Future<String> _loadArticle() async {
     return await rootBundle.loadString(articlePath);
@@ -17,7 +21,7 @@ class ArticlePage extends StatelessWidget {
       backgroundColor: const Color(0xA6ECE8B9), // 修改背景颜色
       appBar: AppBar(
         title: Text(
-          '印象派介绍',
+          appBarTitle,
           style: TextStyle(
             fontWeight: FontWeight.bold,
             color: const Color(0xFF634634), // 设置导航栏文字颜色为黑色

@@ -53,7 +53,7 @@ class HomePage extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const ArticlePage(articlePath: 'assets/article/impressionist.md'),
+                                  builder: (context) => const ArticlePage(articlePath: 'assets/article/impressionist.md',appBarTitle:'印象派介绍'),
                                 ),
                               );
                             },
@@ -64,9 +64,31 @@ class HomePage extends StatelessWidget {
                             width: 10,
                           ),
                           CustomWellHorizonal(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ArticlePage(articlePath:'assets/article/巴洛克艺术.md',appBarTitle:'巴洛克艺术'),
+                                ),
+                              );
+                            },
                             imagePath: "assets/images/placeholder.jpg",
-                            text: "后印象派",
+                            text: "巴洛克艺术",
+                          ),
+                          Container(
+                            width: 10,
+                          ),
+                          CustomWellHorizonal(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ArticlePage(articlePath:'assets/article/表现主义.md',appBarTitle:'表现主义'),
+                                ),
+                              );
+                            },
+                            imagePath: "assets/images/placeholder.jpg",
+                            text: "表现主义",
                           ),
                           Container(
                             width: 10,
