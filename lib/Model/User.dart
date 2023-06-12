@@ -15,7 +15,7 @@ class User {
         this.collects});
 
   User.fromJson(Map<String, dynamic> json) {
-    loginName = json['login_name'];
+    loginName = json['username'];
     bio = json['bio?'];
     avatarUrl = json['avatar_url'];
     following = json['following'];

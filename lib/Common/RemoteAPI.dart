@@ -8,12 +8,11 @@ import 'dart:io';
 import 'package:vangogh/Model/User.dart';
 
 class RemoteAPI {
-
+  static const host = 'http://springboot-web-framework-suavkxfcpe.cn-hangzhou.fcapp.run';
   RemoteAPI(BuildContext? context);
 
   Future login(String username, String password) async {
-    const url =
-        'https://springboot-web-framework-suavkxfcpe.cn-hangzhou.fcapp.run/auth/login'; // 替换为实际的登录接口URL
+    const url = '$host/auth/login'; // 替换为实际的登录接口URL
     final headers = {'Content-Type': 'application/json'}; // 设置请求头
 
     final body = {
@@ -35,8 +34,7 @@ class RemoteAPI {
   }
 
   Future register(String username, String password) async {
-    const url =
-        'https://64fb1cec-4fdb-47a6-9056-92daa6fb9ac7.mock.pstmn.io'; // 替换为实际的登录接口URL
+    const url = '$host/auth/register'; // 替换为实际的登录接口URL
     final headers = {'Authorization': ' '}; // 设置请求头
 
     final body = {
@@ -57,25 +55,6 @@ class RemoteAPI {
     return null;
   }
 
-  Future<List<int>?> _uploadImage(File imageFile) async {
-    print('开始上传图片：${imageFile.path}');
-    var request = http.Request(
-        'POST',
-        Uri.parse(
-            'http://demo-test-vangogh-xrgfpupeat.cn-hangzhou.fcapp.run/test'));
-    List<int> imageBytes = await imageFile.readAsBytes();
-    var headers = {'Content-Type': 'image/jpeg'};
-    request.bodyBytes = imageBytes;
-    request.headers.addAll(headers);
-    http.StreamedResponse response = await request.send();
-
-    if (response.statusCode == 200) {
-      List<int> bytes = await response.stream.toBytes();
-      return bytes ;
-    } else {
-      return null;
-    }
-  }
 
   Future<List<Map<String, dynamic>>> getRecommendation() async {
     try {
