@@ -13,6 +13,9 @@ class MyApp extends StatelessWidget {
 
   static const String _title = 'Van Gogh';
 
+  set isLoggedIn(bool isLoggedIn) {}
+
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
