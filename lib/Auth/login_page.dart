@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vangogh/Auth/forgetPassword_page.dart';
 import 'package:vangogh/Auth/register_page.dart';
 import 'package:vangogh/main.dart';
@@ -111,6 +112,13 @@ class _LoginPageState extends State<LoginPage> {
 
                 User? user = await RemoteAPI(context).login(_phone, _password);
                 if (user != null) {
+                  final SharedPreferences prefs = await SharedPreferences.getInstance();
+                  prefs.setString('Username', user.loginName.toString());
+                  prefs.setString('AvatarUrl', user.avatarUrl.toString());
+                  prefs.setString('Following', user.following.toString());
+                  prefs.setString('Likes', user.likes.toString());
+                  prefs.setString('Collects', user.collects.toString());
+                  prefs.setBool('isLoggedIn', true);
                   if (mounted) {
                     Navigator.pushReplacement(
                       context,

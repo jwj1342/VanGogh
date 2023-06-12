@@ -23,6 +23,11 @@ class User {
     collects = json['collects'];
   }
 
+
+
+
+
+
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['login_name'] = this.loginName;
@@ -33,4 +38,5 @@ class User {
     data['collects'] = this.collects;
     return data;
   }
+
 }
