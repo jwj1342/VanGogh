@@ -104,10 +104,10 @@ void main() {
   testWidgets('Test forgot password button', (WidgetTester tester) async {
     // 创建一个测试用的MaterialApp
     await tester.pumpWidget(MaterialApp(
-      home: LoginPage(),
+      home: const LoginPage(),
       routes: {
-        '/forget_password': (context) => ForgetPasswordPage(),
-        '/main_page': (context) => MyStatefulWidget(),
+        '/forget_password': (context) => const ForgetPasswordPage(),
+        '/main_page': (context) => const MyStatefulWidget(),
       },
     ));
 
@@ -225,7 +225,7 @@ void main() {
 
   testWidgets('Test page navigation', (WidgetTester tester) async {
     // Build the app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+    await tester.pumpWidget(const MyApp());
 
     // Verify that the initial page is the home page.
     expect(find.byType(HomePage), findsOneWidget);

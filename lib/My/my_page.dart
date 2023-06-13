@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:vangogh/Auth/login_page.dart';
 
 class MyPage extends StatefulWidget {
   @override
@@ -6,32 +9,41 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
-  int _followerCount = 0;
-  int _favoriteCount = 0;
-  int _likeCount = 0;
 
   Future<String> _fetchFollowerCount() async {
-    // TODO: 异步请求获取关注数
-    await Future.delayed(Duration(seconds: 1));
-    return '100';
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(prefs.getBool('isLoggedIn') == true) {
+      return prefs.getString('Following') ?? '0';
+    }
+    await Future.delayed(const Duration(seconds: 1));
+    return '未登录';
   }
 
   Future<String> _fetchFavoriteCount() async {
-    // TODO: 异步请求获取收藏数
-    await Future.delayed(Duration(seconds: 1));
-    return '200';
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(prefs.getBool('isLoggedIn') == true) {
+      return prefs.getString('Collects') ?? '0';
+    }
+    await Future.delayed(const Duration(seconds: 1));
+    return '未登录';
   }
 
   Future<String> _fetchLikeCount() async {
-    // TODO: 异步请求获取点赞数
-    await Future.delayed(Duration(seconds: 1));
-    return '300';
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(prefs.getBool('isLoggedIn') == true) {
+      return prefs.getString('Likes') ?? '0';
+    }
+    await Future.delayed(const Duration(seconds: 1));
+    return '未登录';
   }
 
-  Future<String> _uploadAvatar() async {
-    // TODO: 用户上传图片，并返回 URL 地址
-    await Future.delayed(Duration(seconds: 1));
-    return 'https://cdn.example.com/user/avatar.png';
+  Future<String> _fetchUsername() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if(prefs.getBool('isLoggedIn') == true) {
+      return prefs.getString('Username') ?? '未登录';
+    }
+    await Future.delayed(const Duration(seconds: 1));
+    return '未登录';
   }
 
   @override
@@ -41,10 +53,10 @@ class _MyPageState extends State<MyPage> {
       body: Column(
         children: [
           Container(
-            margin: const EdgeInsets.fromLTRB(10,35,10,0),
+            margin: const EdgeInsets.fromLTRB(10, 35, 10, 0),
             padding: const EdgeInsets.all(40.0),
             decoration: BoxDecoration(
-              color:const Color(0xffcce5ff),
+              color: const Color(0xffcce5ff),
               boxShadow: [
                 BoxShadow(
                   color: Colors.grey.withOpacity(0.5),
@@ -62,13 +74,10 @@ class _MyPageState extends State<MyPage> {
                   //默认图片
                 ),
                 const SizedBox(height: 8.0),
-                const Text(
-                  '用户昵称',
-                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-                ),
+                buildText(),
                 const SizedBox(height: 8.0),
                 const Text(
-                  '个人简介',
+                  '个人简介:',
                   style: TextStyle(fontSize: 16.0),
                   textAlign: TextAlign.center,
                 ),
@@ -76,44 +85,74 @@ class _MyPageState extends State<MyPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildInfoColumn('关注', _followerCount),
-                    _buildInfoColumn('获赞', _likeCount),
-                    _buildInfoColumn('收藏', _favoriteCount),
+                    _buildInfoColumn('关注'),
+                    _buildInfoColumn('获赞'),
+                    _buildInfoColumn('收藏'),
                   ],
                 ),
               ],
             ),
           ),
           Expanded(
-          child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 0),
-            child: ListView(
-              children: [
-
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 0),
+              child: ListView(
+                children: [
                   _buildListTile(Icons.favorite, '我的收藏', () {}),
-                _buildListTile(Icons.search, '搜索', () {}),
-                _buildListTile(Icons.history, '浏览记录', () {}),
-                _buildListTile(Icons.person_outline, '个人信息', () {}),
-                _buildListTile(Icons.security, '账号安全', () {}),
-                _buildListTile(Icons.settings, '设置', () {}),
-                _buildListTile(Icons.help_outline, '帮助与反馈', () {}),
-                _buildListTile(Icons.info_outline, '关于', () {}),
-                _buildListTile(Icons.exit_to_app, '退出登录', () {}),
-              ],
+                  _buildListTile(Icons.search, '搜索', () {}),
+                  _buildListTile(Icons.history, '浏览记录', () {}),
+                  _buildListTile(Icons.person_outline, '个人信息', () {}),
+                  _buildListTile(Icons.security, '账号安全', () {}),
+                  _buildListTile(Icons.settings, '设置', () {}),
+                  _buildListTile(Icons.help_outline, '帮助与反馈', () {}),
+                  _buildListTile(Icons.info_outline, '关于', () {}),
+                  _buildListTile(Icons.exit_to_app, '退出登录', () async {
+                    final SharedPreferences prefs = await SharedPreferences.getInstance();
+                    prefs.remove('isLoggedIn');
+                    prefs.remove('UserName');
+                    prefs.remove('Following');
+                    prefs.remove('Likes');
+                    prefs.remove('Favorites');
+                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
+                  }),
+                ],
+              ),
             ),
-          ),
           ),
         ],
       ),
     );
   }
 
-  Column _buildInfoColumn(String title, int count) {
+
+
+  FutureBuilder<String> buildText() {
+    return  FutureBuilder<String>(
+      future: _fetchUsername(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator();
+        }
+        if (snapshot.hasError) {
+          if (kDebugMode) {
+            print(snapshot.error);
+          }
+          return const Text('Error',style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold));
+        }
+        return Text(
+          snapshot.data.toString(),
+          style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+        );
+      },
+    );
+  }
+  //style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+  Column _buildInfoColumn(String title) {
     return Column(
       children: [
         Text(
           title,
-          style: TextStyle(fontSize: 16.0),
+          style: const TextStyle(fontSize: 16.0),
         ),
         const SizedBox(height: 4.0),
         FutureBuilder<String>(
@@ -124,14 +163,17 @@ class _MyPageState extends State<MyPage> {
               : _fetchLikeCount(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             }
             if (snapshot.hasError) {
-              return Text('Error');
+              if (kDebugMode) {
+                print(snapshot.error);
+              }
+              return const Text('Error');
             }
             return Text(
               snapshot.data.toString(),
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             );
           },
         ),
@@ -146,8 +188,6 @@ class _MyPageState extends State<MyPage> {
       onTap: onTap,
     );
   }
+
+
 }
-
-
-
-

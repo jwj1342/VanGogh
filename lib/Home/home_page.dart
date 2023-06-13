@@ -107,8 +107,9 @@ class HomePage extends StatelessWidget {
                           fontSize: 20.0,
                         ),
                       )),
+
                   const SizedBox(
-                    height: 285,
+                    height: 180,
                     child: UserCreate(),
                   ),
                 ])));

@@ -23,9 +23,12 @@ class _UserCreateState extends State<UserCreate> {
 
   Future<void> fetchData() async {
     List<Map<String, dynamic>> backendData = await RemoteAPI(context).getRecommendation();
-    setState(() {
-      items = UserCreationAdapter.adapt(backendData);
-    });
+    if (mounted) { // 检查当前 State 对象是否仍然存在于 widget 树中
+      setState(() {
+        items = UserCreationAdapter.adapt(backendData);
+      });
+    }
+
   }
 
   @override
@@ -42,8 +45,8 @@ class _UserCreateState extends State<UserCreate> {
             onTap: () {},
             imagePath: items[itemIndex].imagePath,
             text: items[itemIndex].title,
-            width: 250,
-            height: 285,
+            width: 150,
+            height: 200,
           );
         }
       },
@@ -82,7 +85,7 @@ class CustomWellHorizontalInfinite extends StatelessWidget {
             fit: BoxFit.fitHeight,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadiusDirectional.circular(20),
+            borderRadius: BorderRadiusDirectional.circular(5),
           ),
         ),
         width: width,
