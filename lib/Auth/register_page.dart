@@ -1,7 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
+
 import 'package:flutter/gestures.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 import '../Common/RemoteAPI.dart';
 import '../Model/User.dart';
@@ -17,16 +22,20 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final GlobalKey _formKey = GlobalKey<FormState>();
   Color _eyeColor = Colors.grey;
+
   late String _phone, _password;
+
   bool _isObscure = true;
   final TextEditingController _pass = TextEditingController();
   final TextEditingController _confirmPass = TextEditingController();
 
   TextEditingController? cController = TextEditingController();
 
+
   bool _isChecked = false; //单选，用户协议
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: const Color(0xfff1eecf),
       body: Form(
@@ -64,10 +73,11 @@ class _RegisterPageState extends State<RegisterPage> {
             });
           },
         ),
-        Text("我已阅读并同意用户服务协议和隐私政策")
+        const Text("我已阅读并同意用户服务协议和隐私政策")
       ],
     );
   }
+
 
   Widget buildRegisterButton(BuildContext context) {
     return Align(
@@ -78,10 +88,11 @@ class _RegisterPageState extends State<RegisterPage> {
           margin: const EdgeInsets.fromLTRB(40, 0, 40, 0),
           child: ElevatedButton(
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Color(0x99252323)),
+                backgroundColor: MaterialStateProperty.all(const Color(0x99252323)),
                 // 设置圆角
                 shape: MaterialStateProperty.all(const StadiumBorder(
                     side: BorderSide(style: BorderStyle.none)))),
+
             child:
             Text('注册', style: Theme.of(context).primaryTextTheme.headline6),
             onPressed: () async {
@@ -93,6 +104,13 @@ class _RegisterPageState extends State<RegisterPage> {
                   //TODO 执行注册方法
                   User? user = await RemoteAPI(context).register(_phone, _password);
                   if (user != null) {
+                    final SharedPreferences prefs = await SharedPreferences.getInstance();
+                  prefs.setString('Username', user.loginName.toString());
+                  prefs.setString('AvatarUrl', user.avatarUrl.toString());
+                  prefs.setString('Following', user.following.toString());
+                  prefs.setString('Likes', user.likes.toString());
+                  prefs.setString('Collects', user.collects.toString());
+                  prefs.setBool('isLoggedIn', true);
                     if (mounted) {
                       Navigator.push(
                         context,
@@ -108,6 +126,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 // 广播：未同意用户协议
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text('请同意用户协议')));
+
               }
             },
           ),
@@ -129,9 +148,10 @@ class _RegisterPageState extends State<RegisterPage> {
         if (value != _pass.text) {
           return '密码不匹配';
         }
+        return null;
       },
       decoration: InputDecoration(
-        icon: Icon(Icons.lock_clock_outlined),
+        icon: const Icon(Icons.lock_clock_outlined),
         hintText: "再次确认密码",
         suffixIcon: IconButton(
           icon: Icon(
@@ -165,9 +185,10 @@ class _RegisterPageState extends State<RegisterPage> {
         if (value.length < 6) {
           return '密码长度不能小于6位';
         }
+        return null;
       },
       decoration: InputDecoration(
-        icon: Icon(Icons.lock_clock_outlined),
+        icon: const Icon(Icons.lock_clock_outlined),
         hintText: "请输入密码",
         suffixIcon: IconButton(
           icon: Icon(
@@ -195,8 +216,9 @@ class _RegisterPageState extends State<RegisterPage> {
         if (value == null || value.isEmpty) {
           return '手机号不能为空';
         }
+        return null;
       },
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         icon: Icon(Icons.account_circle_outlined),
         hintText: "请输入手机号",
       ),
