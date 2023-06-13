@@ -11,7 +11,6 @@ import 'package:vangogh/Common/SaveImageFromGallery.dart';
 import 'package:vangogh/Common/ShareImageFromGallery.dart';
 import 'package:vangogh/Model/User.dart';
 
-
 import '../Common/RemoteAPI.dart';
 
 class CreatePage extends StatefulWidget {
@@ -96,33 +95,19 @@ class _CreatePageState extends State<CreatePage>
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
-      // 在 build 之后设置状态
-      if (mounted) { // 检查当前 State 对象是否仍然存在于 widget 树中
-        setState(() {
-          if (pickedFile != null) {
-
-            //  title = await showDialog(
-            //    context: context,
-            //    builder: (BuildContext context) {
-            //      return TextInputDialog(onSubmit: (String result) {  }, );
-            //    },
-            //  );
-            //图片路径
-            _image = File(pickedFile.path);
-            //用户名，是否是游客
-            _userData();
-            // _uploadImage(_image!);
-            // 更新图片列表
-            _loadImageWidgets();
-          }
-          // 获取图片标题
-          _showInputDialog();
-
-         // RemoteAPI(context).uploadImageV2(_image!, _username!, isVisitor, title);
-        });
-      }
-
-
+    // 在 build 之后设置状态
+    if (mounted) {
+      // 检查当前 State 对象是否仍然存在于 widget 树中
+      setState(() {
+        if (pickedFile != null) {
+          _image = File(pickedFile.path);
+          //用户名，是否是游客
+          _userData();
+          _showInputDialog();// 获取图片标题
+          _saveImageWidgets();// 更新图片列表
+        }
+      });
+    }
   }
 
   Future<void> _userData() async {
@@ -163,44 +148,19 @@ class _CreatePageState extends State<CreatePage>
           ],
         );
       },
-    ).then((value) {
+    ).then((value) async {
       if (value != null) {
         print("image");
         print(value);
-        RemoteAPI(context).uploadImageV2(_image!, _username!, isVisitor, value);//传递数据
+        var bytes = await RemoteAPI(context)
+            .uploadImageV2(_image!, _username!, isVisitor, value); //传递数据
+        setState(() {
+          _imageWidgets.add(Image.memory(Uint8List.fromList(bytes!)));
+          _saveImageWidgets();
+        });
       }
     });
   }
-
-  // Future<void> _uploadImage(File imageFile) async {
-  //   print('开始上传图片：${imageFile.path}');
-  //   var request = http.MultipartRequest(
-  //     'POST',
-  //     Uri.parse(
-  //         'http://demo-test-vangogh-xrgfpupeat.cn-hangzhou.fcapp.run/test'),
-  //   );
-  //   request.files.add(
-  //     await http.MultipartFile.fromPath(
-  //       'file',
-  //       imageFile.path,
-  //       filename: 'image.jpg',
-  //     ),
-  //   );
-  //   http.StreamedResponse response = await request.send();
-  //
-  //   if (response.statusCode == 200) {
-  //     List<int> bytes = await response.stream.toBytes();
-  //     setState(() {
-  //       // _imageWidgets.add(Image.memory(Uint8List.fromList(bytes)));
-  //       _imageWidgets.add(Image.file(imageFile));
-  //     });
-  //     _saveImageWidgets(); // 保存到 SharedPreferences
-  //   } else {
-  //     if (kDebugMode) {
-  //       print(response.reasonPhrase);
-  //     }
-  //   }
-  // }
 
   void _showImageMenu(int index) {
     showModalBottomSheet<void>(
@@ -305,7 +265,7 @@ class _CreatePageState extends State<CreatePage>
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.orangeAccent,
         onPressed: () {
-          _getImage();//+号的点击事件
+          _getImage(); //+号的点击事件
         },
         child: const Icon(Icons.add),
       ),

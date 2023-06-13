@@ -8,6 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
+import 'package:vangogh/Common/RemoteAPI.dart';
 import 'package:vangogh/Model/User.dart';
 import 'package:flutter/widgets.dart';
 
