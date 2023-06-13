@@ -23,9 +23,12 @@ class _UserCreateState extends State<UserCreate> {
 
   Future<void> fetchData() async {
     List<Map<String, dynamic>> backendData = await RemoteAPI(context).getRecommendation();
-    setState(() {
-      items = UserCreationAdapter.adapt(backendData);
-    });
+    if (mounted) { // 检查当前 State 对象是否仍然存在于 widget 树中
+      setState(() {
+        items = UserCreationAdapter.adapt(backendData);
+      });
+    }
+
   }
 
   @override
