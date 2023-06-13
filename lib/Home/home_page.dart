@@ -48,25 +48,50 @@ class HomePage extends StatelessWidget {
                     child: ListView(
                         scrollDirection: Axis.horizontal,
                         children: <Widget>[
+
+
                           CustomWellHorizonal(
+
                             onTap: () {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => const ArticlePage(articlePath: 'assets/article/impressionist.md'),
+                                  builder: (context) => const ArticlePage(articlePath: 'assets/article/impressionist.md',appBarTitle:'印象派介绍'),
                                 ),
                               );
                             },
-                            imagePath: "assets/images/placeholder.jpg",
+                            imagePath:"assets/images/impression.jpeg",
                             text: "印象派",
                           ),
                           Container(
                             width: 10,
                           ),
                           CustomWellHorizonal(
-                            onTap: () {},
-                            imagePath: "assets/images/placeholder.jpg",
-                            text: "后印象派",
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ArticlePage(articlePath:'assets/article/巴洛克艺术.md',appBarTitle:'巴洛克艺术'),
+                                ),
+                              );
+                            },
+                            imagePath: "assets/images/Baroqueart.webp",
+                            text: "巴洛克艺术",
+                          ),
+                          Container(
+                            width: 10,
+                          ),
+                          CustomWellHorizonal(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const ArticlePage(articlePath:'assets/article/表现主义.md',appBarTitle:'表现主义'),
+                                ),
+                              );
+                            },
+                            imagePath: "assets/images/expressionism.webp",
+                            text: "表现主义",
                           ),
                           Container(
                             width: 10,
