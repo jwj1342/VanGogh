@@ -15,13 +15,18 @@ class User {
         this.collects});
 
   User.fromJson(Map<String, dynamic> json) {
-    loginName = json['login_name'];
+    loginName = json['username'];
     bio = json['bio?'];
     avatarUrl = json['avatar_url'];
     following = json['following'];
     likes = json['likes'];
     collects = json['collects'];
   }
+
+
+
+
+
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -33,4 +38,5 @@ class User {
     data['collects'] = collects;
     return data;
   }
+
 }

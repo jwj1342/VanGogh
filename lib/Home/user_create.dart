@@ -45,8 +45,8 @@ class _UserCreateState extends State<UserCreate> {
             onTap: () {},
             imagePath: items[itemIndex].imagePath,
             text: items[itemIndex].title,
-            width: 250,
-            height: 285,
+            width: 150,
+            height: 200,
           );
         }
       },
@@ -85,7 +85,7 @@ class CustomWellHorizontalInfinite extends StatelessWidget {
             fit: BoxFit.fitHeight,
           ),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadiusDirectional.circular(20),
+            borderRadius: BorderRadiusDirectional.circular(5),
           ),
         ),
         width: width,

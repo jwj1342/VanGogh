@@ -141,6 +141,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
         if (value != _pass.text) {
           return '密码不匹配';
         }
+        return null;
       },
       decoration: InputDecoration(
         icon: const Icon(Icons.lock_clock_outlined),
@@ -177,6 +178,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
         if (value.length < 6) {
           return '密码长度不能小于6位';
         }
+        return null;
       },
       decoration: InputDecoration(
         icon: const Icon(Icons.lock_clock_outlined),
@@ -206,6 +208,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
         if (value == null || value.isEmpty) {
           return '手机号不能为空';
         }
+        return null;
       },
       decoration: const InputDecoration(
         icon: Icon(Icons.account_circle_outlined),

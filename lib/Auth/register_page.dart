@@ -2,7 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Common/RemoteAPI.dart';
+import '../Model/User.dart';
+import '../main.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -14,13 +18,12 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final GlobalKey _formKey = GlobalKey<FormState>();
   Color _eyeColor = Colors.grey;
-  late String _phone, _password,_autoCodeText="获取验证码";
+  late String _phone, _password, _autoCodeText = "获取验证码";
   bool _isObscure = true;
   final TextEditingController _pass = TextEditingController();
   final TextEditingController _confirmPass = TextEditingController();
 
   TextEditingController? cController = TextEditingController();
-
 
   late Timer _timer;
   int _timeCount = 60;
@@ -30,7 +33,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-    ));//透明状态栏
+    )); //透明状态栏
     return Scaffold(
       backgroundColor: const Color(0xfff1eecf),
       body: Form(
@@ -80,7 +83,6 @@ class _RegisterPageState extends State<RegisterPage> {
       onSaved: (value) {},
       controller: cController,
       maxLength: 6,
-
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp("[0-9]")),
         LengthLimitingTextInputFormatter(6)
@@ -89,8 +91,11 @@ class _RegisterPageState extends State<RegisterPage> {
         icon: const Icon(Icons.admin_panel_settings_outlined),
         hintText: ('请输入验证码'),
         suffix: GestureDetector(
-          child: Text(_autoCodeText,style: const TextStyle(color: Colors.blue),),
-          onTap: (){
+          child: Text(
+            _autoCodeText,
+            style: const TextStyle(color: Colors.blue),
+          ),
+          onTap: () {
             _startTimer();
           },
         ),
@@ -122,21 +127,39 @@ class _RegisterPageState extends State<RegisterPage> {
           margin: const EdgeInsets.fromLTRB(40, 0, 40, 0),
           child: ElevatedButton(
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Color(0x99252323)),
+                backgroundColor: MaterialStateProperty.all(const Color(0x99252323)),
                 // 设置圆角
                 shape: MaterialStateProperty.all(const StadiumBorder(
                     side: BorderSide(style: BorderStyle.none)))),
-            child:
-            Text('注册', style: Theme
-                .of(context)
-                .primaryTextTheme
-                .titleLarge),
-            onPressed: () {
+            child: Text('注册',
+                style: Theme.of(context).primaryTextTheme.titleLarge),
+            onPressed: () async {
               // 表单校验通过才会继续执行
               if ((_formKey.currentState as FormState).validate()) {
                 (_formKey.currentState as FormState).save();
                 if (kDebugMode) {
                   print('phone: $_phone, password: $_password');
+                }
+                var user = await RemoteAPI(context).register(_phone, _password);
+                if (user != null&&user.loginName!=null&&user.runtimeType==User) {
+                  final SharedPreferences prefs = await SharedPreferences.getInstance();
+                  prefs.setString('Username', user.loginName.toString());
+                  prefs.setString('AvatarUrl', user.avatarUrl.toString());
+                  prefs.setString('Following', user.following.toString());
+                  prefs.setString('Likes', user.likes.toString());
+                  prefs.setString('Collects', user.collects.toString());
+                  prefs.setBool('isLoggedIn', true);
+                  if (mounted) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MyStatefulWidget()),
+                    );
+                  }
+                } else {
+                  if (kDebugMode) {
+                    print(user);
+                  }
                 }
               }
             },
@@ -159,9 +182,10 @@ class _RegisterPageState extends State<RegisterPage> {
         if (value != _pass.text) {
           return '密码不匹配';
         }
+        return null;
       },
       decoration: InputDecoration(
-        icon: Icon(Icons.lock_clock_outlined),
+        icon: const Icon(Icons.lock_clock_outlined),
         hintText: "再次确认密码",
         suffixIcon: IconButton(
           icon: Icon(
@@ -174,10 +198,7 @@ class _RegisterPageState extends State<RegisterPage> {
               _isObscure = !_isObscure;
               _eyeColor = (_isObscure
                   ? Colors.grey
-                  : Theme
-                  .of(context)
-                  .iconTheme
-                  .color)!;
+                  : Theme.of(context).iconTheme.color)!;
             });
           },
         ),
@@ -198,6 +219,7 @@ class _RegisterPageState extends State<RegisterPage> {
         if (value.length < 6) {
           return '密码长度不能小于6位';
         }
+        return null;
       },
       decoration: InputDecoration(
         icon: const Icon(Icons.lock_clock_outlined),
@@ -213,10 +235,7 @@ class _RegisterPageState extends State<RegisterPage> {
               _isObscure = !_isObscure;
               _eyeColor = (_isObscure
                   ? Colors.grey
-                  : Theme
-                  .of(context)
-                  .iconTheme
-                  .color)!;
+                  : Theme.of(context).iconTheme.color)!;
             });
           },
         ),
@@ -230,6 +249,7 @@ class _RegisterPageState extends State<RegisterPage> {
         if (value == null || value.isEmpty) {
           return '手机号不能为空';
         }
+        return null;
       },
       decoration: const InputDecoration(
         icon: Icon(Icons.account_circle_outlined),

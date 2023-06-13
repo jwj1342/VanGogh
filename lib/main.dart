@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vangogh/Auth/login_page.dart';
 import 'package:vangogh/Create/create_page.dart';
 import 'package:vangogh/Home/home_page.dart';
@@ -21,7 +22,6 @@ class MyApp extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
     ));//透明状态栏
-    bool isLoggedIn = false;
     return MaterialApp(
       title: _title,
       theme: ThemeData(
@@ -30,14 +30,31 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.blueGrey, // 设置背景色
         ),
       ),
-      home: _handleCurrentScreen(isLoggedIn),
+      home: FutureBuilder<Widget>(
+        future: _handleCurrentScreen(),
+        builder: (BuildContext context, AsyncSnapshot<Widget> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // 显示加载状态
+            return const CircularProgressIndicator();
+          } else {
+            if (snapshot.hasError) {
+              // 处理错误情况
+              return Text('Error: ${snapshot.error}');
+            } else {
+              // 显示获取到的页面
+              return snapshot.data!;
+            }
+          }
+        },
+      ),
     );
   }
 
-  Widget _handleCurrentScreen(bool isLoggedIn) {
+  Future<Widget> _handleCurrentScreen() async {
     // 根据当前登录状态决定显示的页面
-    // 这里可以通过你的登录逻辑来判断用户是否已登录
-    if (isLoggedIn) {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final bool? isLoggedIn = prefs.getBool('isLoggedIn');
+    if (isLoggedIn!=null && isLoggedIn) {
       return const MyStatefulWidget();
     } else {
       // 未登录，跳转到登录页
@@ -56,11 +73,9 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   int _selectedIndex = 0;
   static final List<Widget> _widgetOptions = <Widget>[
-    //LoginPage(),
     const HomePage(),
     const CreatePage(),
     MyPage(),
-    //LoginPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -93,12 +108,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             label: '我的',
             backgroundColor: Color.fromRGBO(173, 170, 196, 1),
           ),
-          // BottomNavigationBarItem(
-          //   //这个登录的几面接口仅供开发使用，最后会移除。
-          //   icon: Icon(Icons.login),
-          //   label: '登录',
-          //   backgroundColor: Colors.red,
-          // ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.black,
