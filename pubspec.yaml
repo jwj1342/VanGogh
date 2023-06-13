@@ -64,6 +64,7 @@ flutter:
   assets:
      - assets/images/
      - assets/Logo/
+     - assets/article/
 
   fonts:
     - family: HanaMinA
