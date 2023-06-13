@@ -57,7 +57,6 @@ class RemoteAPI {
     return null;
   }
 
-
   Future<List<Map<String, dynamic>>> getRecommendation() async {
     try {
       var url = Uri.parse('http://springboot-web-framework-suavkxfcpe.cn-hangzhou.fcapp.run/picture/getRecommend'); // 替换为实际的登录接口URL
@@ -112,7 +111,6 @@ class RemoteAPI {
   }
 
   Future<List<int>?> uploadImageV2(File imageFile, String username, bool isVisitor, String title) async {
-
     var request = http.MultipartRequest('POST', Uri.parse('http://app-webui-uhkbndqpdy.cn-hangzhou.fcapp.run/test'));
 
     // 添加图片文件到请求体
@@ -139,12 +137,9 @@ class RemoteAPI {
       }
     } catch (e) {
       // 处理异常
-      if (kDebugMode) {
-        print('Image upload failed with error $e.');
-      }
+      print('Image upload failed with error $e.');
       return null;
     }
   }
-
 
 }

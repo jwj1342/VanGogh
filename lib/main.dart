@@ -57,6 +57,7 @@ class MyApp extends StatelessWidget {
     if (isLoggedIn!=null && isLoggedIn) {
       return const MyStatefulWidget();
     } else {
+      // 未登录，跳转到登录页
       return const LoginPage();
     }
   }

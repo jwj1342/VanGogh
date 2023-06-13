@@ -1,13 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vangogh/Common/SaveImageFromGallery.dart';
 import 'package:vangogh/Common/ShareImageFromGallery.dart';
+import 'package:vangogh/Model/User.dart';
+
+import '../Common/RemoteAPI.dart';
 
 class CreatePage extends StatefulWidget {
   const CreatePage({Key? key}) : super(key: key);
@@ -23,6 +32,9 @@ class _CreatePageState extends State<CreatePage>
   bool get wantKeepAlive => true; //重写wantKeepAlive方法，返回true
 
   File? _image;
+  bool isVisitor = false;
+  String? _username;
+  String title = '';
   List<Widget> _imageWidgets = [];
 
   //initState()方法是初始化状态，当Widget第一次插入到Widget树时会被调用，
@@ -35,18 +47,15 @@ class _CreatePageState extends State<CreatePage>
 
   //加载图片
   void _loadImageWidgets() async {
-    SharedPreferences prefs =
-        await SharedPreferences.getInstance(); //获取SharedPreferences实例
-    List<String>? imagePaths = prefs.getStringList('imagePaths'); //获取图片路径
-    if (imagePaths != null) {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? imagePaths = prefs.getStringList('imagePaths');
+    if (imagePaths != null&&imagePaths.isNotEmpty) {
       setState(() {
-        _imageWidgets =
-            imagePaths.map((path) => Image.file(File(path))).toList();
-        //将图片路径转换为图片
-        //map()方法是将一个集合中的每一个元素都映射成一个新的元素，最终返回一个新的集合。
+        _imageWidgets = imagePaths.map((path) => Image.file(File(path))).toList();
       });
     }
   }
+
 
   //dispose()方法是销毁状态，当State对象从树中被移除时，会调用此回调。
   @override
@@ -55,15 +64,37 @@ class _CreatePageState extends State<CreatePage>
     super.dispose();
   }
 
+
+
+  Future<File> saveMemoryImageToFile(MemoryImage memoryImage) async {
+    final tempDir = await getTemporaryDirectory();
+    final filePath = '${tempDir.path}/image.jpg';
+    final bytes = memoryImage.bytes;
+    await File(filePath).writeAsBytes(bytes);
+    return File(filePath);
+  }
+
   void _saveImageWidgets() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> imagePaths = _imageWidgets //获取图片路径
-        .map((image) => (image as Image).image as FileImage) //将图片转换为FileImage
-        .map((fileImage) => fileImage.file.path) //获取图片路径
-        .toList(); //转换为List
-    //上面的代码是为了将图片路径转换为List<String>类型
-    prefs.setStringList('imagePaths', imagePaths); //保存图片路径
+    List<String> imagePaths = await Future.wait(
+      _imageWidgets.map((image) async {
+        if (image is Image) {
+          if (image.image is MemoryImage) {
+            MemoryImage memoryImage = image.image as MemoryImage;
+            File fileImage = await saveMemoryImageToFile(memoryImage);
+            return fileImage.path;
+          } else if (image.image is FileImage) {
+            FileImage fileImage = image.image as FileImage;
+            return fileImage.file.path;
+          }
+        }
+        return null;
+      }),
+    ).then((list) => list.cast<String>().toList());
+
+    prefs.setStringList('imagePaths', imagePaths);
   }
+
 
   void _deleteImageWidgets(int index) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -87,39 +118,74 @@ class _CreatePageState extends State<CreatePage>
   Future<void> _getImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-        _uploadImage(_image!);
-      }
-    });
+
+    // 在 build 之后设置状态
+    if (mounted) {
+      // 检查当前 State 对象是否仍然存在于 widget 树中
+      setState(() {
+        if (pickedFile != null) {
+          _image = File(pickedFile.path);
+          //用户名，是否是游客
+          _userData();
+          _showInputDialog();// 获取图片标题
+
+        }
+      });
+      _saveImageWidgets();// 更新图片列表
+    }
   }
 
-  Future<void> _uploadImage(File imageFile) async {
-    if (kDebugMode) {
-      print('开始上传图片：${imageFile.path}');
-    }
-    var request = http.MultipartRequest(
-      'POST',
-      Uri.parse(
-          'http://demo-test-vangogh-xrgfpupeat.cn-hangzhou.fcapp.run/test'),
-    );
-    request.files.add(
-      await http.MultipartFile.fromPath(
-        'file',
-        imageFile.path,
-        filename: 'image.jpg',
-      ),
-    );
-    http.StreamedResponse response = await request.send();
-    if (/*response.statusCode == 200*/ true) {
-      setState(() {
-        _imageWidgets.add(Image.file(imageFile));
-      });
-      _saveImageWidgets(); // 保存到 SharedPreferences
-    } else {
-      print(response.reasonPhrase);
-    }
+  Future<void> _userData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _username = prefs.getString('UserName') ?? "你是游客吧";
+    });
+    if (_username == "你是游客吧") isVisitor = true;
+    print(_username!);
+    print(isVisitor);
+  }
+
+  Future<void> _showInputDialog() async {
+    String? imageName;
+    showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('输入图片名称'),
+          content: TextField(
+            onChanged: (String value) {
+              imageName = value;
+            },
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('取消'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            TextButton(
+              child: const Text('确定'),
+              onPressed: () {
+                Navigator.pop(context, imageName);
+              },
+            ),
+          ],
+        );
+      },
+    ).then((value) async {
+      if (value != null) {
+        print("image");
+        print(value);
+        var bytes = await RemoteAPI(context)
+            .uploadImageV2(_image!, _username!, isVisitor, value); //传递数据
+        setState(() {
+          _imageWidgets.add(Image.memory(Uint8List.fromList(bytes!)));
+        });
+        _saveImageWidgets();
+        _loadImageWidgets();
+      }
+    });
   }
 
   void _showImageMenu(int index) {
@@ -225,7 +291,7 @@ class _CreatePageState extends State<CreatePage>
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.orangeAccent,
         onPressed: () {
-          _getImage();
+          _getImage(); //+号的点击事件
         },
         child: const Icon(Icons.add),
       ),
