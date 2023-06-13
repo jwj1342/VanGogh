@@ -48,7 +48,10 @@ class HomePage extends StatelessWidget {
                     child: ListView(
                         scrollDirection: Axis.horizontal,
                         children: <Widget>[
+
+
                           CustomWellHorizonal(
+
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -57,7 +60,7 @@ class HomePage extends StatelessWidget {
                                 ),
                               );
                             },
-                            imagePath: "assets/images/placeholder.jpg",
+                            imagePath:"assets/images/impression.jpeg",
                             text: "印象派",
                           ),
                           Container(
@@ -72,7 +75,7 @@ class HomePage extends StatelessWidget {
                                 ),
                               );
                             },
-                            imagePath: "assets/images/placeholder.jpg",
+                            imagePath: "assets/images/Baroqueart.webp",
                             text: "巴洛克艺术",
                           ),
                           Container(
@@ -87,7 +90,7 @@ class HomePage extends StatelessWidget {
                                 ),
                               );
                             },
-                            imagePath: "assets/images/placeholder.jpg",
+                            imagePath: "assets/images/expressionism.webp",
                             text: "表现主义",
                           ),
                           Container(
