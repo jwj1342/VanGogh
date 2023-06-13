@@ -2,16 +2,14 @@ import 'dart:io';
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
-import 'package:vangogh/Common/RemoteAPI.dart';
 import 'package:vangogh/Model/User.dart';
-import 'package:vangogh/main.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_test/src/binding.dart';
 
 
 
@@ -22,8 +20,8 @@ void main() {
   // 登录功能测试
   test('Login Test', () async {
     // 提供一个有效的用户名和密码
-    final username = 'jwj1342';
-    final password = '123456';
+    const username = 'jwj1342';
+    const password = '123456';
 
     // 执行登录操作
     final user = await remoteAPI.login(username, password);
@@ -39,8 +37,8 @@ void main() {
   // 注册功能测试
   test('Register Test', () async {
     // 提供一个有效的用户名和密码
-    final username = 'dym';
-    final password = '333';
+    const username = 'dym';
+    const password = '333';
 
     // 执行注册操作
     final user = await remoteAPI.register(username, password);
@@ -56,7 +54,7 @@ void main() {
   // 图片上传功能测试
   test('Image Upload Test', () async {
     // 提供一个有效的图片文件路径
-    final imageFilePath = 'assets/images/placeholder.jpg';
+    const imageFilePath = 'assets/images/placeholder.jpg';
 
     // 创建一个临时文件副本
     final tempImageFile = await _createTempImageFile(imageFilePath);
@@ -116,7 +114,9 @@ class RemoteAPI {
       return User.fromJson(responseBody);
       // return true;
     } else {
-      print(response.reasonPhrase);
+      if (kDebugMode) {
+        print(response.reasonPhrase);
+      }
       return null;
     }
   }
@@ -145,7 +145,9 @@ class RemoteAPI {
   }
 
   Future<List<int>?> _uploadImage(File imageFile) async {
-    print('开始上传图片：${imageFile.path}');
+    if (kDebugMode) {
+      print('开始上传图片：${imageFile.path}');
+    }
     var request = http.Request(
         'POST',
         Uri.parse(
