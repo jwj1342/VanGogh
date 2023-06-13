@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -42,18 +47,15 @@ class _CreatePageState extends State<CreatePage>
 
   //加载图片
   void _loadImageWidgets() async {
-    SharedPreferences prefs =
-        await SharedPreferences.getInstance(); //获取SharedPreferences实例
-    List<String>? imagePaths = prefs.getStringList('imagePaths'); //获取图片路径
-    if (imagePaths != null) {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? imagePaths = prefs.getStringList('imagePaths');
+    if (imagePaths != null&&imagePaths.isNotEmpty) {
       setState(() {
-        _imageWidgets =
-            imagePaths.map((path) => Image.file(File(path))).toList();
-        //将图片路径转换为图片
-        //map()方法是将一个集合中的每一个元素都映射成一个新的元素，最终返回一个新的集合。
+        _imageWidgets = imagePaths.map((path) => Image.file(File(path))).toList();
       });
     }
   }
+
 
   //dispose()方法是销毁状态，当State对象从树中被移除时，会调用此回调。
   @override
@@ -62,15 +64,37 @@ class _CreatePageState extends State<CreatePage>
     super.dispose();
   }
 
+
+
+  Future<File> saveMemoryImageToFile(MemoryImage memoryImage) async {
+    final tempDir = await getTemporaryDirectory();
+    final filePath = '${tempDir.path}/image.jpg';
+    final bytes = memoryImage.bytes;
+    await File(filePath).writeAsBytes(bytes);
+    return File(filePath);
+  }
+
   void _saveImageWidgets() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> imagePaths = _imageWidgets //获取图片路径
-        .map((image) => (image as Image).image as FileImage) //将图片转换为FileImage
-        .map((fileImage) => fileImage.file.path) //获取图片路径
-        .toList(); //转换为List
-    //上面的代码是为了将图片路径转换为List<String>类型
-    prefs.setStringList('imagePaths', imagePaths); //保存图片路径
+    List<String> imagePaths = await Future.wait(
+      _imageWidgets.map((image) async {
+        if (image is Image) {
+          if (image.image is MemoryImage) {
+            MemoryImage memoryImage = image.image as MemoryImage;
+            File fileImage = await saveMemoryImageToFile(memoryImage);
+            return fileImage.path;
+          } else if (image.image is FileImage) {
+            FileImage fileImage = image.image as FileImage;
+            return fileImage.file.path;
+          }
+        }
+        return null;
+      }),
+    ).then((list) => list.cast<String>().toList());
+
+    prefs.setStringList('imagePaths', imagePaths);
   }
+
 
   void _deleteImageWidgets(int index) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -104,9 +128,10 @@ class _CreatePageState extends State<CreatePage>
           //用户名，是否是游客
           _userData();
           _showInputDialog();// 获取图片标题
-          _saveImageWidgets();// 更新图片列表
+
         }
       });
+      _saveImageWidgets();// 更新图片列表
     }
   }
 
@@ -156,8 +181,9 @@ class _CreatePageState extends State<CreatePage>
             .uploadImageV2(_image!, _username!, isVisitor, value); //传递数据
         setState(() {
           _imageWidgets.add(Image.memory(Uint8List.fromList(bytes!)));
-          _saveImageWidgets();
         });
+        _saveImageWidgets();
+        _loadImageWidgets();
       }
     });
   }
