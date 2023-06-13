@@ -2,7 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter/services.dart';
+
+import 'package:flutter/gestures.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
+
 
 import '../Common/RemoteAPI.dart';
 import '../Model/User.dart';
@@ -18,22 +22,20 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final GlobalKey _formKey = GlobalKey<FormState>();
   Color _eyeColor = Colors.grey;
-  late String _phone, _password, _autoCodeText = "获取验证码";
+
+  late String _phone, _password;
+
   bool _isObscure = true;
   final TextEditingController _pass = TextEditingController();
   final TextEditingController _confirmPass = TextEditingController();
 
   TextEditingController? cController = TextEditingController();
 
-  late Timer _timer;
-  int _timeCount = 60;
 
   bool _isChecked = false; //单选，用户协议
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-    )); //透明状态栏
+
     return Scaffold(
       backgroundColor: const Color(0xfff1eecf),
       body: Form(
@@ -50,8 +52,6 @@ class _RegisterPageState extends State<RegisterPage> {
             buildPasswordTextField(context), // 输入密码
             const SizedBox(height: 30),
             buildCheckPasswordTextField(context), // 确认密码
-            const SizedBox(height: 30),
-            buildVerificationCode(), //验证码
             const SizedBox(height: 30),
             buildAccept(context), //用户协议和隐私政策
             const SizedBox(height: 100),
@@ -78,45 +78,6 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  Widget buildVerificationCode() {
-    return TextFormField(
-      onSaved: (value) {},
-      controller: cController,
-      maxLength: 6,
-      inputFormatters: [
-        FilteringTextInputFormatter.allow(RegExp("[0-9]")),
-        LengthLimitingTextInputFormatter(6)
-      ],
-      decoration: InputDecoration(
-        icon: const Icon(Icons.admin_panel_settings_outlined),
-        hintText: ('请输入验证码'),
-        suffix: GestureDetector(
-          child: Text(
-            _autoCodeText,
-            style: const TextStyle(color: Colors.blue),
-          ),
-          onTap: () {
-            _startTimer();
-          },
-        ),
-      ),
-    );
-  }
-
-  void _startTimer() {
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        if (_timeCount <= 0) {
-          _autoCodeText = '重新获取';
-          _timer.cancel();
-          _timeCount = 60;
-        } else {
-          _timeCount -= 1;
-          _autoCodeText = "$_timeCount" 's';
-        }
-      });
-    });
-  }
 
   Widget buildRegisterButton(BuildContext context) {
     return Align(
@@ -131,36 +92,41 @@ class _RegisterPageState extends State<RegisterPage> {
                 // 设置圆角
                 shape: MaterialStateProperty.all(const StadiumBorder(
                     side: BorderSide(style: BorderStyle.none)))),
-            child: Text('注册',
-                style: Theme.of(context).primaryTextTheme.titleLarge),
+
+            child:
+            Text('注册', style: Theme.of(context).primaryTextTheme.headline6),
             onPressed: () async {
-              // 表单校验通过才会继续执行
-              if ((_formKey.currentState as FormState).validate()) {
-                (_formKey.currentState as FormState).save();
-                if (kDebugMode) {
-                  print('phone: $_phone, password: $_password');
-                }
-                var user = await RemoteAPI(context).register(_phone, _password);
-                if (user != null&&user.loginName!=null&&user.runtimeType==User) {
-                  final SharedPreferences prefs = await SharedPreferences.getInstance();
+              //要同意用户协议
+              if (_isChecked != false) {
+                // 表单校验通过才会继续执行
+                if ((_formKey.currentState as FormState).validate()) {
+                  (_formKey.currentState as FormState).save();
+                  //TODO 执行注册方法
+                  User? user = await RemoteAPI(context).register(_phone, _password);
+                  if (user != null) {
+                    final SharedPreferences prefs = await SharedPreferences.getInstance();
                   prefs.setString('Username', user.loginName.toString());
                   prefs.setString('AvatarUrl', user.avatarUrl.toString());
                   prefs.setString('Following', user.following.toString());
                   prefs.setString('Likes', user.likes.toString());
                   prefs.setString('Collects', user.collects.toString());
                   prefs.setBool('isLoggedIn', true);
-                  if (mounted) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const MyStatefulWidget()),
-                    );
-                  }
-                } else {
-                  if (kDebugMode) {
-                    print(user);
+                    if (mounted) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const MyStatefulWidget()),
+                      );
+                    }
+                  } else {
+                    print("注册失败");
                   }
                 }
+              } else {
+                // 广播：未同意用户协议
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text('请同意用户协议')));
+
               }
             },
           ),
@@ -245,6 +211,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   Widget buildPhoneTextField() {
     return TextFormField(
+      onSaved: (value) => _phone = value!,
       validator: (value) {
         if (value == null || value.isEmpty) {
           return '手机号不能为空';
