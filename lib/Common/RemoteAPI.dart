@@ -37,7 +37,7 @@ class RemoteAPI {
 
   Future register(String username, String password) async {
     const url = '$host/auth/register'; // 替换为实际的登录接口URL
-    final headers = {'Authorization': ' '}; // 设置请求头
+    final headers = {'Content-Type': 'application/json'};
 
     final body = {
       'username': username,

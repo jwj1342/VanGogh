@@ -67,6 +67,7 @@ class ArticlePage extends StatelessWidget {
               ),
             );
           } else if (snapshot.hasError) {
+            print(snapshot.error);
             return const Center(child: Text('Failed to load article'));
           }
           return const Center(child: CircularProgressIndicator());
