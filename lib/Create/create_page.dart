@@ -38,6 +38,7 @@ class _CreatePageState extends State<CreatePage>
   String? _username;
   String title = '';
   List<Widget> _imageWidgets = [];
+  List<String> _imageStrings=[];
 
   //initState()方法是初始化状态，当Widget第一次插入到Widget树时会被调用，
   //对于每一个State对象，Flutter只会调用一次该方法，所以，通常在该方法中做一些一次性的操作，如状态初始化、订阅子树的事件通知等。
@@ -51,13 +52,19 @@ class _CreatePageState extends State<CreatePage>
   void _loadImageWidgets() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? imagePaths = prefs.getStringList('imagePaths');
+    //List<Image> _imageFiles = [];
     if (imagePaths != null&&imagePaths.isNotEmpty) {
       setState(() {
-        _imageWidgets = imagePaths.map((path) => Image.file(File(path))).toList();
+        _imageWidgets = imagePaths.map((url) {
+          return Image.network(url);
+        }).toList();
       });
+    }else{
+      setState(() {_imageWidgets=[];}); // 删除最后一张图片清空页面
     }
+    _imageStrings=imagePaths!;
+    //print(_imageWidgets);
   }
-
 
   //dispose()方法是销毁状态，当State对象从树中被移除时，会调用此回调。
   @override
@@ -67,55 +74,34 @@ class _CreatePageState extends State<CreatePage>
   }
 
 
-
-  Future<File> saveMemoryImageToFile(MemoryImage memoryImage) async {
-    final tempDir = await getTemporaryDirectory();
-    final filePath = '${tempDir.path}/image.jpg';
-    final bytes = memoryImage.bytes;
-    await File(filePath).writeAsBytes(bytes);
-    return File(filePath);
-  }
-
   void _saveImageWidgets() async {
+    //print(_imageStrings);
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> imagePaths = await Future.wait(
-      _imageWidgets.map((image) async {
-        //
-        if (image is Image) {
-          if (image.image is MemoryImage) {
-            MemoryImage memoryImage = image.image as MemoryImage;
-            File fileImage = await saveMemoryImageToFile(memoryImage);
-            return fileImage.path;
-          } else if (image.image is FileImage) {
-            FileImage fileImage = image.image as FileImage;
-            return fileImage.file.path;
-          }
-        }
-        return null;
-      }),
-    ).then((list) => list.cast<String>().toList());
-
-    prefs.setStringList('imagePaths', imagePaths);
+    // if(_imageWidgets!=null&&_imageWidgets.isNotEmpty){
+    //   _imageStrings=prefs.getStringList('imagePaths')!;
+    // }
+    prefs.setStringList('imagePaths', _imageStrings);
   }
 
 
   void _deleteImageWidgets(int index) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String>? imagePaths = prefs.getStringList('imagePaths'); //获取图片路径
-     try {
-       if (imagePaths != null) {
+    try {
+      if (imagePaths != null) {
         imagePaths.removeAt(index);
-       }
-       prefs.setStringList('imagePaths', imagePaths!);
-       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-         content: Text("删除成功"),
-       ));
+      }
+      prefs.setStringList('imagePaths', imagePaths!);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("删除成功"),
+      ));
       _loadImageWidgets(); // 再次刷新以更新页面显示内容
-     } catch (e) {
-       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("保存失败: $e"),
-       ));
-     }
+      ));
+    }
   }
 
 
@@ -186,7 +172,8 @@ class _CreatePageState extends State<CreatePage>
         String imageUrl = responseBody!['imageUrl']; //这一步是将返回数据转换成json格式
         setState(() {
           // _imageWidgets.add(Image.memory(Uint8List.fromList(bytes!)));
-          _imageWidgets.add(Image.network(imageUrl)); //这一步是否能成功有待考量
+          //_imageWidgets.add(Image.network(imageUrl)); //这一步是否能成功有待考量
+          _imageStrings.add(imageUrl);
         });
         _saveImageWidgets();
         _loadImageWidgets();
@@ -206,7 +193,7 @@ class _CreatePageState extends State<CreatePage>
               title: const Text('分享'),
               onTap: () {
                 // 处理分享逻辑
-                ShareImage.shareImage(_imageWidgets, index);
+                ShareImage.shareImage(_imageWidgets , index);
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   content: Text("分享成功"),
                 ));
