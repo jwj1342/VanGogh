@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -78,6 +80,7 @@ class _CreatePageState extends State<CreatePage>
     SharedPreferences prefs = await SharedPreferences.getInstance();
     List<String> imagePaths = await Future.wait(
       _imageWidgets.map((image) async {
+        //
         if (image is Image) {
           if (image.image is MemoryImage) {
             MemoryImage memoryImage = image.image as MemoryImage;
@@ -114,6 +117,7 @@ class _CreatePageState extends State<CreatePage>
        ));
      }
   }
+
 
   Future<void> _getImage() async {
     final picker = ImagePicker();
@@ -177,10 +181,12 @@ class _CreatePageState extends State<CreatePage>
       if (value != null) {
         print("image");
         print(value);
-        var bytes = await RemoteAPI(context)
+        var responseBody = await RemoteAPI(context)
             .uploadImageV2(_image!, _username!,  value); //传递数据
+        String imageUrl = responseBody!['imageUrl']; //这一步是将返回数据转换成json格式
         setState(() {
-          _imageWidgets.add(Image.memory(Uint8List.fromList(bytes!)));
+          // _imageWidgets.add(Image.memory(Uint8List.fromList(bytes!)));
+          _imageWidgets.add(Image.network(imageUrl)); //这一步是否能成功有待考量
         });
         _saveImageWidgets();
         _loadImageWidgets();

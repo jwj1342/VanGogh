@@ -8,7 +8,7 @@ import 'dart:io';
 import 'package:vangogh/Model/User.dart';
 
 class RemoteAPI {
-  static const host = '121.36.86.111:8080';
+  static const host = 'http://121.36.86.111:8080';
   RemoteAPI(BuildContext? context);
 
   Future login(String username, String password) async {
@@ -16,7 +16,7 @@ class RemoteAPI {
     final headers = {'Content-Type': 'application/json'}; // 设置请求头
 
     final body = {
-      'username': username,
+      'userName': username,
       'password': password,
     };
     var jsonb = json.encoder.convert(body);
@@ -28,6 +28,7 @@ class RemoteAPI {
       return User.fromJson(responseBody);
       // return true;
     } else {
+      final Map<String, dynamic> responseBody = json.decode(response.body);
       if (kDebugMode) {
         print(response.reasonPhrase);
       }
@@ -110,16 +111,16 @@ class RemoteAPI {
   //   }
   // }
 
-  Future<List<int>?> uploadImageV2(File imageFile, String username,String title) async {
+  Future<Map<String, dynamic>?> uploadImageV2(File imageFile, String username,String title) async {
     const url='$host/image/upload';
     var request = http.MultipartRequest('POST', Uri.parse(url));
 
     // 添加图片文件到请求体
-    var file = await http.MultipartFile.fromPath('image', imageFile.path);
+    var file = await http.MultipartFile.fromPath('imageFile', imageFile.path);
     request.files.add(file);
 
     // 添加其他参数到请求体
-    request.fields['username'] = username;
+    request.fields['userName'] = username;
     request.fields['title'] = title;
     request.fields['prompt'] = "I would like to transform a portrait photo using a diffusion model to emulate the distinctive style of Claude Monet's Impressionism. Please apply the following characteristics to the image: soft brushstrokes, vibrant colors with emphasis on capturing the play of light and shadow, blurred edges, and a dreamy, ethereal atmosphere. I want the final result to evoke the essence of Monet's iconic Impressionist paintings, showcasing a fusion of colors and a sense of fleeting beauty in the captured moment.";
     try {
@@ -127,10 +128,12 @@ class RemoteAPI {
       var response = await http.Response.fromStream(streamedResponse);
       if (response.statusCode == 200) {
         // 图片上传成功，返回处理后的图片数据
-        return response.bodyBytes;
+        Map<String, dynamic> responseBody = json.decode(response.body);
+        return responseBody;
       } else {
         // 处理请求失败的情况
         if (kDebugMode) {
+          final Map<String, dynamic> responseBody = json.decode(response.body);
           print('Image upload failed with status ${response.statusCode}.');
         }
         return null;

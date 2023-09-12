@@ -66,7 +66,7 @@ void main() {
     final title = 'Test Image';
 
     // 调用上传图片的函数
-    final result = await RemoteAPI(null).uploadImageV2(imageFile,username,isVisitor,title);
+    final result = await RemoteAPI(null).uploadImageV2(imageFile,username,title);
 
     // 检查结果是否为null
     expect(result, isNotNull);

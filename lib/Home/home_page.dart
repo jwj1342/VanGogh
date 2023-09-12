@@ -116,8 +116,6 @@ class HomePage extends StatelessWidget {
   }
 }
 
-
-
 class CustomWellHorizonal extends StatelessWidget {
   const CustomWellHorizonal({
     super.key,
