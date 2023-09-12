@@ -178,7 +178,7 @@ class _CreatePageState extends State<CreatePage>
         print("image");
         print(value);
         var bytes = await RemoteAPI(context)
-            .uploadImageV2(_image!, _username!, isVisitor, value); //传递数据
+            .uploadImageV2(_image!, _username!,  value); //传递数据
         setState(() {
           _imageWidgets.add(Image.memory(Uint8List.fromList(bytes!)));
         });

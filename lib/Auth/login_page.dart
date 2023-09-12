@@ -52,7 +52,6 @@ class _LoginPageState extends State<LoginPage> {
             buildPhoneTextField(), // 输入手机号
             const SizedBox(height: 30),
             buildPasswordTextField(context), // 输入密码
-            buildForgetPasswordText(context), // 忘记密码
             const SizedBox(height: 150),
             buildLoginButton(context), // 登录按钮
             const SizedBox(height: 30),
@@ -115,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                 if (user != null&&user.loginName!=null) {
                   final SharedPreferences prefs = await SharedPreferences.getInstance();
                   prefs.setString('Username', user.loginName.toString());
-                  prefs.setString('AvatarUrl', user.avatarUrl.toString());
+                  //prefs.setString('AvatarUrl', user.avatarUrl.toString());
                   prefs.setString('Following', user.following.toString());
                   prefs.setString('Likes', user.likes.toString());
                   prefs.setString('Collects', user.collects.toString());
@@ -135,26 +134,6 @@ class _LoginPageState extends State<LoginPage> {
               }
             },
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildForgetPasswordText(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: TextButton(
-          onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return const ForgetPasswordPage(); //要跳转的页面
-            }));
-
-          },
-          key: const ValueKey('forget_password_text'),
-          child: const Text("忘记密码？",
-              style: TextStyle(fontSize: 14, color: Colors.blue)),
         ),
       ),
     );
@@ -203,13 +182,13 @@ class _LoginPageState extends State<LoginPage> {
       onSaved: (value) => _phone = value!,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return '手机号/用户名不能为空';
+          return '用户名不能为空';
         }
         return null;
       },
       decoration: const InputDecoration(
         icon: Icon(Icons.account_circle_outlined),
-        hintText: "请输入手机号/用户名",
+        hintText: "请输入用户名",
       ),
     );
   }
