@@ -40,6 +40,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(color: Colors.blue),
               ),
               onTap: () {
+
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
@@ -110,21 +111,31 @@ class _LoginPageState extends State<LoginPage> {
               if ((_formKey.currentState as FormState).validate()) {
                 (_formKey.currentState as FormState).save();
 
-                User? user = await RemoteAPI(context).login(_phone, _password);
-                if (user != null&&user.loginName!=null) {
-                  final SharedPreferences prefs = await SharedPreferences.getInstance();
-                  prefs.setString('Username', user.loginName.toString());
-                  //prefs.setString('AvatarUrl', user.avatarUrl.toString());
-                  prefs.setString('Following', user.following.toString());
-                  prefs.setString('Likes', user.likes.toString());
-                  prefs.setString('Collects', user.collects.toString());
+                var responseBody = await RemoteAPI(context).login(_phone, _password);
+                if(responseBody.containsKey('userName')) {
+                  final String username = responseBody['userName'];
+                  print("login_username:");
+                  print(username);
+                   final SharedPreferences prefs = await SharedPreferences.getInstance();
+                  prefs.setString('Username',username);
+                  // prefs.setString('AvatarUrl', user.avatarUrl.toString());
+                   prefs.setString('Following',"3");
+                  prefs.setString('Likes', "22");
+                  prefs.setString('Collects', "13");
                   prefs.setBool('isLoggedIn', true);
                   if (mounted) {
-                    Navigator.pushReplacement(
+                    Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const MyStatefulWidget()),
+                        builder: (context) => const MyStatefulWidget(),
+                      ),
+                          (route) => false, // 返回 false 禁止返回上一步
                     );
+                    // Navigator.pushReplacement(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //       builder: (context) => const MyStatefulWidget()),
+                    // );
                   }
                 } else {
                   if (kDebugMode) {

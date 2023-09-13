@@ -92,21 +92,31 @@ class _RegisterPageState extends State<RegisterPage> {
                 if ((_formKey.currentState as FormState).validate()) {
                   (_formKey.currentState as FormState).save();
                   //TODO 执行注册方法
-                  User? user = await RemoteAPI(context).register(_phone, _password);
-                  if (user != null) {
-                    final SharedPreferences prefs = await SharedPreferences.getInstance();
-                    prefs.setString('Username', user.loginName.toString());
-                    prefs.setString('AvatarUrl', user.avatarUrl.toString());
-                    prefs.setString('Following', user.following.toString());
-                    prefs.setString('Likes', user.likes.toString());
-                    prefs.setString('Collects', user.collects.toString());
-                    prefs.setBool('isLoggedIn', true);
+                  var responseBody = await RemoteAPI(context).register(_phone, _password);
+                  if(responseBody.containsKey('userName')) {
+                    final String username = responseBody['userName'];
+                    print("register_username:");
+                    print(username);
+                     final SharedPreferences prefs = await SharedPreferences.getInstance();
+                     prefs.setString('Username',username);
+                    // prefs.setString('AvatarUrl', user.avatarUrl.toString());
+                    prefs.setString('Following',"0");
+                     prefs.setString('Likes', "0");
+                     prefs.setString('Collects', "0");
+                     prefs.setBool('isLoggedIn', true);
                     if (mounted) {
-                      Navigator.push(
+                      Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const MyStatefulWidget()),
+                          builder: (context) => const MyStatefulWidget(),
+                        ),
+                            (route) => false, // 返回 false 禁止返回上一步
                       );
+                      // Navigator.push(
+                      //   context,
+                      //   MaterialPageRoute(
+                      //       builder: (context) => const MyStatefulWidget()),
+                      // );
                     }
                   } else {
                     print("注册失败");

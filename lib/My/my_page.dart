@@ -109,10 +109,11 @@ class _MyPageState extends State<MyPage> {
                   _buildListTile(Icons.exit_to_app, '退出登录', () async {
                     final SharedPreferences prefs = await SharedPreferences.getInstance();
                     prefs.remove('isLoggedIn');
-                    prefs.remove('UserName');
+                    prefs.remove('Username');
                     prefs.remove('Following');
                     prefs.remove('Likes');
                     prefs.remove('Favorites');
+
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginPage()));
                   }),
                 ],

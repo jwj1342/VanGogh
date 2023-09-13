@@ -21,41 +21,41 @@ class RemoteAPI {
     };
     var jsonb = json.encoder.convert(body);
     final response =
-        await http.post(Uri.parse(url), headers: headers, body: jsonb);
+    await http.post(Uri.parse(url), headers: headers, body: jsonb);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseBody = json.decode(response.body);
-      return User.fromJson(responseBody);
+      return responseBody;
       // return true;
     } else {
-      final Map<String, dynamic> responseBody = json.decode(response.body);
-      if (kDebugMode) {
-        print(response.reasonPhrase);
-      }
+      print('Request failed with status: ${response.statusCode}');
       return null;
     }
   }
 
+
   Future register(String username, String password) async {
     const url = '$host/user/register'; // 替换为实际的登录接口URL
-    final headers = {'Content-Type': 'application/json'};
-
-    final body = {
-      'username': username,
+    final Map<String, dynamic> requestData = {
+      'userName': username,
       'password': password,
     };
-    var jsonb = json.encoder.convert(body);
-    final response =
-        await http.post(Uri.parse(url), headers: headers, body: jsonb);
-
+    print(requestData);
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      body: jsonEncode(requestData),
+      headers: {'Content-Type': 'application/json'},
+    );
+    print(response.statusCode);
     if (response.statusCode == 200) {
+      print("register success");
       final Map<String, dynamic> responseBody = json.decode(response.body);
-      return User.fromJson(responseBody);
+      return responseBody;
+    }else{
+      print('Request failed with status: ${response.statusCode}');
+      return null;
     }
-    if (response.statusCode == 401) {
-      return response.body;
-    }
-    return null;
+
   }
 
   Future<List<Map<String, dynamic>>> getRecommendation() async {
@@ -145,4 +145,29 @@ class RemoteAPI {
     }
   }
 
+  Future callProtect(String username) async {
+    const url = '$host/user/protected'; // 替换为实际的登录接口URL
+
+    final Map<String, dynamic> requestData = {
+      'userName': username,
+    };
+    // final Map<String, String> requestData = {
+    //   'userName': 'username',
+    // };
+
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      body: requestData,
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    );
+    if (response.statusCode == 200) {
+      print("stay success");
+      final Map<String, dynamic> responseBody = json.decode(response.body);
+      return responseBody;
+    }else{
+      print('RemoteAPI_callProtect Request failed with status: ${response.statusCode}');
+      return null;
+    }
+
+  }
 }

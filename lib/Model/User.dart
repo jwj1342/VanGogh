@@ -38,5 +38,8 @@ class User {
     data['collects'] = collects;
     return data;
   }
-
+  // @override
+  // String toString() {
+  //   return 'User{loginName: \$loginName}';
+  // }
 }
