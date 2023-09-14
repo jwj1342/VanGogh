@@ -9,6 +9,7 @@ import 'package:vangogh/Model/User.dart';
 
 class RemoteAPI {
   static const host = 'http://121.36.86.111:8080';
+
   RemoteAPI(BuildContext? context);
 
   Future login(String username, String password) async {
@@ -21,7 +22,7 @@ class RemoteAPI {
     };
     var jsonb = json.encoder.convert(body);
     final response =
-    await http.post(Uri.parse(url), headers: headers, body: jsonb);
+        await http.post(Uri.parse(url), headers: headers, body: jsonb);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseBody = json.decode(response.body);
@@ -32,7 +33,6 @@ class RemoteAPI {
       return null;
     }
   }
-
 
   Future register(String username, String password) async {
     const url = '$host/user/register'; // 替换为实际的登录接口URL
@@ -46,29 +46,30 @@ class RemoteAPI {
       body: jsonEncode(requestData),
       headers: {'Content-Type': 'application/json'},
     );
-    print(response.statusCode);
     if (response.statusCode == 200) {
       print("register success");
       final Map<String, dynamic> responseBody = json.decode(response.body);
       return responseBody;
-    }else{
+    } else {
       print('Request failed with status: ${response.statusCode}');
       return null;
     }
-
   }
 
   Future<List<Map<String, dynamic>>> getRecommendation() async {
     try {
       var url = '$host/image/getRecommend'; // 替换为实际的登录接口URL
-      var response = await http.get(url as Uri);
 
+      var response = await http.get(Uri.parse(url));
+      print("API_getRecommend");
+print(response.statusCode);
       if (response.statusCode == 200) {
         String responseBody = utf8.decode(response.bodyBytes);
         List<dynamic> decodedBody = json.decode(responseBody);
         List<Map<String, dynamic>> result = [];
         if (decodedBody is List) {
-          result = decodedBody.map((item) => item as Map<String, dynamic>).toList();
+          result =
+              decodedBody.map((item) => item as Map<String, dynamic>).toList();
         } else {
           if (kDebugMode) {
             print('Invalid response body format');
@@ -111,8 +112,9 @@ class RemoteAPI {
   //   }
   // }
 
-  Future<Map<String, dynamic>?> uploadImageV2(File imageFile, String username,String title) async {
-    const url='$host/image/upload';
+  Future<Map<String, dynamic>?> uploadImageV2(
+      File imageFile, String username, String title) async {
+    const url = '$host/image/upload';
     var request = http.MultipartRequest('POST', Uri.parse(url));
 
     // 添加图片文件到请求体
@@ -122,7 +124,8 @@ class RemoteAPI {
     // 添加其他参数到请求体
     request.fields['userName'] = username;
     request.fields['title'] = title;
-    request.fields['prompt'] = "I would like to transform a portrait photo using a diffusion model to emulate the distinctive style of Claude Monet's Impressionism. Please apply the following characteristics to the image: soft brushstrokes, vibrant colors with emphasis on capturing the play of light and shadow, blurred edges, and a dreamy, ethereal atmosphere. I want the final result to evoke the essence of Monet's iconic Impressionist paintings, showcasing a fusion of colors and a sense of fleeting beauty in the captured moment.";
+    request.fields['prompt'] =
+        "I would like to transform a portrait photo using a diffusion model to emulate the distinctive style of Claude Monet's Impressionism. Please apply the following characteristics to the image: soft brushstrokes, vibrant colors with emphasis on capturing the play of light and shadow, blurred edges, and a dreamy, ethereal atmosphere. I want the final result to evoke the essence of Monet's iconic Impressionist paintings, showcasing a fusion of colors and a sense of fleeting beauty in the captured moment.";
     try {
       var streamedResponse = await request.send();
       var response = await http.Response.fromStream(streamedResponse);
@@ -146,28 +149,49 @@ class RemoteAPI {
   }
 
   Future callProtect(String username) async {
-    const url = '$host/user/protected'; // 替换为实际的登录接口URL
+  const url = '$host/user/protected'; // 替换为实际的登录接口URL
 
-    final Map<String, dynamic> requestData = {
-      'userName': username,
-    };
-    // final Map<String, String> requestData = {
-    //   'userName': 'username',
+    // final Map<String, dynamic> requestData = {
+    //   'userName': username,
     // };
 
-    final http.Response response = await http.post(
-      Uri.parse(url),
-      body: requestData,
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-    );
+   // final Uri apiUrl = Uri.parse('\$host/user/protected').replace(queryParameters: requestData);
+
+    final http.Response response = await http.get(Uri.parse(url));
+    // final http.Response response = await http.get(
+    //   Uri.parse(url),
+    //   //url as Uri,
+    //   headers: {'Content-Type': 'application/json'},
+    // );
     if (response.statusCode == 200) {
       print("stay success");
       final Map<String, dynamic> responseBody = json.decode(response.body);
       return responseBody;
-    }else{
-      print('RemoteAPI_callProtect Request failed with status: ${response.statusCode}');
+    } else {
+      print(
+          'RemoteAPI_callProtect Request failed with status: ${response.statusCode}');
       return null;
     }
+  }
 
+  Future logOut(String username) async {
+    const url = '$host/user/logout'; // 替换为实际的登录接口URL
+    final Map<String, dynamic> requestData = {
+      'userName': username,
+    };
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      body: jsonEncode(requestData),
+      headers: {'Content-Type': 'application/json'},
+    );
+    if (response.statusCode == 200) {
+      print("log out success");
+      final Map<String, dynamic> responseBody = json.decode(response.body);
+      return responseBody;
+    } else {
+      print(
+          'RemoteAPI_logOut Request failed with status: ${response.statusCode}');
+      return null;
+    }
   }
 }

@@ -8,11 +8,11 @@ class User {
 
   User(
       {this.loginName,
-        this.bio,
-        this.avatarUrl,
-        this.following,
-        this.likes,
-        this.collects});
+      this.bio,
+      this.avatarUrl,
+      this.following,
+      this.likes,
+      this.collects});
 
   User.fromJson(Map<String, dynamic> json) {
     loginName = json['username'];
@@ -22,11 +22,6 @@ class User {
     likes = json['likes'];
     collects = json['collects'];
   }
-
-
-
-
-
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -38,8 +33,4 @@ class User {
     data['collects'] = collects;
     return data;
   }
-  // @override
-  // String toString() {
-  //   return 'User{loginName: \$loginName}';
-  // }
 }

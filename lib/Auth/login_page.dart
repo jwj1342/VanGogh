@@ -40,7 +40,6 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(color: Colors.blue),
               ),
               onTap: () {
-
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
@@ -100,26 +99,27 @@ class _LoginPageState extends State<LoginPage> {
           margin: const EdgeInsets.fromLTRB(40, 0, 40, 0),
           child: ElevatedButton(
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(const Color(0x99252323)),
+                backgroundColor:
+                    MaterialStateProperty.all(const Color(0x99252323)),
                 // 设置圆角
                 shape: MaterialStateProperty.all(const StadiumBorder(
                     side: BorderSide(style: BorderStyle.none)))),
             child: Text('登录',
                 style: Theme.of(context).primaryTextTheme.titleLarge),
-            onPressed: ()  async {
+            onPressed: () async {
               // 表单校验通过才会继续执行
               if ((_formKey.currentState as FormState).validate()) {
                 (_formKey.currentState as FormState).save();
-
-                var responseBody = await RemoteAPI(context).login(_phone, _password);
-                if(responseBody.containsKey('userName')) {
-                  final String username = responseBody['userName'];
-                  print("login_username:");
-                  print(username);
-                   final SharedPreferences prefs = await SharedPreferences.getInstance();
-                  prefs.setString('Username',username);
+                var responseBody =
+                    await RemoteAPI(context).login(_phone, _password);
+                print(responseBody);
+                if (responseBody.containsKey('username')) {
+                  final String username = responseBody['username'];
+                  final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  prefs.setString('Username', username);
                   // prefs.setString('AvatarUrl', user.avatarUrl.toString());
-                   prefs.setString('Following',"3");
+                  prefs.setString('Following', "3");
                   prefs.setString('Likes', "22");
                   prefs.setString('Collects', "13");
                   prefs.setBool('isLoggedIn', true);
@@ -129,13 +129,8 @@ class _LoginPageState extends State<LoginPage> {
                       MaterialPageRoute(
                         builder: (context) => const MyStatefulWidget(),
                       ),
-                          (route) => false, // 返回 false 禁止返回上一步
+                      (route) => false, // 返回 false 禁止返回上一步
                     );
-                    // Navigator.pushReplacement(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //       builder: (context) => const MyStatefulWidget()),
-                    // );
                   }
                 } else {
                   if (kDebugMode) {

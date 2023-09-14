@@ -6,7 +6,6 @@ import 'package:vangogh/Auth/login_page.dart';
 import 'package:vangogh/Common/RemoteAPI.dart';
 import 'package:vangogh/Create/create_page.dart';
 import 'package:vangogh/Home/home_page.dart';
-import 'package:vangogh/Model/User.dart';
 import 'package:vangogh/My/my_page.dart';
 import 'package:flutter/services.dart';
 
@@ -63,29 +62,33 @@ class MyApp extends StatelessWidget {
   Future<Widget> _handleCurrentScreen() async {
     // 根据当前登录状态决定显示的页面
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    //final bool? isLoggedIn = prefs.getBool('isLoggedIn');
-    //prefs.setString('Username',"aaa");
     String? username = prefs.getString('Username');
     print("main_username:");
     print(username);
-    if (username==null){
+    if(username!=null){
+      return const MyStatefulWidget();
+    }
+    if(username==null){
       return const LoginPage();
     }
     var responseBody = await RemoteAPI(context).callProtect(username!);
-    if (responseBody!=null) {
+    print("main_responseBody");
+    print(responseBody);
+    if (responseBody == null) {
+      return const LoginPage();
+    } else if (responseBody.containsKey('username')) {
       print("main_持久化成功");
-      print("username:");
-      print(username);
+      final String username = responseBody['username'];
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('Username', username);
+      prefs.setString('Following', "3");
+      prefs.setString('Likes', "22");
+      prefs.setString('Collects', "13");
+      prefs.setBool('isLoggedIn', true);
       return const MyStatefulWidget();
     } else {
       print("main_登录状态已销毁");
       // 未登录，跳转到登录页
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.remove('isLoggedIn');
-      prefs.remove('Username');
-      prefs.remove('Following');
-      prefs.remove('Likes');
-      prefs.remove('Favorites');
       return const LoginPage();
     }
   }

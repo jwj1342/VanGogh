@@ -84,39 +84,36 @@ class _RegisterPageState extends State<RegisterPage> {
                 shape: MaterialStateProperty.all(const StadiumBorder(
                     side: BorderSide(style: BorderStyle.none)))),
             child:
-            Text('注册', style: Theme.of(context).primaryTextTheme.headline6),
+                Text('注册', style: Theme.of(context).primaryTextTheme.headline6),
             onPressed: () async {
               //要同意用户协议
               if (_isChecked != false) {
                 // 表单校验通过才会继续执行
                 if ((_formKey.currentState as FormState).validate()) {
                   (_formKey.currentState as FormState).save();
-                  //TODO 执行注册方法
-                  var responseBody = await RemoteAPI(context).register(_phone, _password);
-                  if(responseBody.containsKey('userName')) {
+                  var responseBody =
+                      await RemoteAPI(context).register(_phone, _password);
+                  print(responseBody);
+                  if (responseBody.containsKey('userName')) {
                     final String username = responseBody['userName'];
                     print("register_username:");
                     print(username);
-                     final SharedPreferences prefs = await SharedPreferences.getInstance();
-                     prefs.setString('Username',username);
+                    final SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    prefs.setString('Username', username);
                     // prefs.setString('AvatarUrl', user.avatarUrl.toString());
-                    prefs.setString('Following',"0");
-                     prefs.setString('Likes', "0");
-                     prefs.setString('Collects', "0");
-                     prefs.setBool('isLoggedIn', true);
+                    prefs.setString('Following', "0");
+                    prefs.setString('Likes', "0");
+                    prefs.setString('Collects', "0");
+                    prefs.setBool('isLoggedIn', true);
                     if (mounted) {
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
                           builder: (context) => const MyStatefulWidget(),
                         ),
-                            (route) => false, // 返回 false 禁止返回上一步
+                        (route) => false, // 返回 false 禁止返回上一步
                       );
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //       builder: (context) => const MyStatefulWidget()),
-                      // );
                     }
                   } else {
                     print("注册失败");
