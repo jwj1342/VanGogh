@@ -62,9 +62,9 @@ class RemoteAPI {
     try {
       var url = '$host/image/getRecommend'; // 替换为实际的登录接口URL
       var response = await http.get(url as Uri);
-
       if (response.statusCode == 200) {
         String responseBody = utf8.decode(response.bodyBytes);
+        print(responseBody);
         List<dynamic> decodedBody = json.decode(responseBody);
         List<Map<String, dynamic>> result = [];
         if (decodedBody is List) {

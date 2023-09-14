@@ -3,11 +3,9 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vangogh/Common/SaveImageFromGallery.dart';
 import 'package:vangogh/Common/ShareImageFromGallery.dart';
 import 'package:vangogh/Model/User.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../Common/RemoteAPI.dart';
 
@@ -55,15 +54,18 @@ class _CreatePageState extends State<CreatePage>
     //List<Image> _imageFiles = [];
     if (imagePaths != null&&imagePaths.isNotEmpty) {
       setState(() {
-        _imageWidgets = imagePaths.map((url) {
-          return Image.network(url);
-        }).toList();
+        _imageWidgets=[];
+        for(String imageString in imagePaths){
+          //_imageWidgets.add(Image.network(imageString));
+          _imageWidgets.add(CachedNetworkImage(imageUrl:imageString));
+        }
       });
+      _imageStrings=imagePaths!;
     }else{
       setState(() {_imageWidgets=[];}); // 删除最后一张图片清空页面
     }
-    _imageStrings=imagePaths!;
-    //print(_imageWidgets);
+
+    print("此时图片："+_imageWidgets.toString());
   }
 
   //dispose()方法是销毁状态，当State对象从树中被移除时，会调用此回调。
@@ -128,7 +130,7 @@ class _CreatePageState extends State<CreatePage>
   Future<void> _userData() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      _username = prefs.getString('UserName') ?? "你是游客吧";
+      _username = prefs.getString('Username') ?? "你是游客吧";
     });
     if (_username == "你是游客吧") isVisitor = true;
     print(_username!);
@@ -169,12 +171,13 @@ class _CreatePageState extends State<CreatePage>
         print(value);
         var responseBody = await RemoteAPI(context)
             .uploadImageV2(_image!, _username!,  value); //传递数据
-        String imageUrl = responseBody!['imageUrl']; //这一步是将返回数据转换成json格式
+        String imageUrl = responseBody!['imageUrlAfter']; //这一步是将返回数据转换成json格式
         setState(() {
           // _imageWidgets.add(Image.memory(Uint8List.fromList(bytes!)));
           //_imageWidgets.add(Image.network(imageUrl)); //这一步是否能成功有待考量
           _imageStrings.add(imageUrl);
         });
+        print(_imageStrings);
         _saveImageWidgets();
         _loadImageWidgets();
       }
@@ -193,7 +196,7 @@ class _CreatePageState extends State<CreatePage>
               title: const Text('分享'),
               onTap: () {
                 // 处理分享逻辑
-                ShareImage.shareImage(_imageWidgets , index);
+                ShareImage.shareImage(_imageStrings , index);
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   content: Text("分享成功"),
                 ));
@@ -202,12 +205,19 @@ class _CreatePageState extends State<CreatePage>
             ListTile(
               leading: const Icon(Icons.save),
               title: const Text('保存'),
-              onTap: () {
+              onTap: () async {
                 // 处理保存逻辑
-                SaveImage.saveImage(_imageWidgets, index);
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text("保存成功"),
-                ));
+                var saveResult = SaveImage.saveImage(_imageStrings, index);
+                if (await saveResult){
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("保存成功"),
+                  ));
+                }else{
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                    content: Text("保存失败"),
+                  ));
+                }
+                Navigator.pop(context);
               },
             ),
             ListTile(
