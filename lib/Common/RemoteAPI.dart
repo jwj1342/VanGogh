@@ -25,50 +25,51 @@ class RemoteAPI {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseBody = json.decode(response.body);
-      return User.fromJson(responseBody);
+      return responseBody;
       // return true;
     } else {
-      final Map<String, dynamic> responseBody = json.decode(response.body);
-      if (kDebugMode) {
-        print(response.reasonPhrase);
-      }
+      print('Request failed with status: ${response.statusCode}');
       return null;
     }
   }
 
   Future register(String username, String password) async {
     const url = '$host/user/register'; // 替换为实际的登录接口URL
-    final headers = {'Content-Type': 'application/json'};
-
-    final body = {
-      'username': username,
+    final Map<String, dynamic> requestData = {
+      'userName': username,
       'password': password,
     };
-    var jsonb = json.encoder.convert(body);
-    final response =
-        await http.post(Uri.parse(url), headers: headers, body: jsonb);
-
+    print(requestData);
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      body: jsonEncode(requestData),
+      headers: {'Content-Type': 'application/json'},
+    );
     if (response.statusCode == 200) {
+      print("register success");
       final Map<String, dynamic> responseBody = json.decode(response.body);
-      return User.fromJson(responseBody);
+      return responseBody;
+    } else {
+      print('Request failed with status: ${response.statusCode}');
+      return null;
     }
-    if (response.statusCode == 401) {
-      return response.body;
-    }
-    return null;
   }
 
   Future<List<Map<String, dynamic>>> getRecommendation() async {
     try {
       var url = '$host/image/getRecommend'; // 替换为实际的登录接口URL
-      var response = await http.get(url as Uri);
+
+      var response = await http.get(Uri.parse(url));
+      print("API_getRecommend");
+print(response.statusCode);
       if (response.statusCode == 200) {
         String responseBody = utf8.decode(response.bodyBytes);
         print(responseBody);
         List<dynamic> decodedBody = json.decode(responseBody);
         List<Map<String, dynamic>> result = [];
         if (decodedBody is List) {
-          result = decodedBody.map((item) => item as Map<String, dynamic>).toList();
+          result =
+              decodedBody.map((item) => item as Map<String, dynamic>).toList();
         } else {
           if (kDebugMode) {
             print('Invalid response body format');
@@ -145,4 +146,50 @@ class RemoteAPI {
     }
   }
 
+  Future callProtect(String username) async {
+  const url = '$host/user/protected'; // 替换为实际的登录接口URL
+
+    // final Map<String, dynamic> requestData = {
+    //   'userName': username,
+    // };
+
+   // final Uri apiUrl = Uri.parse('\$host/user/protected').replace(queryParameters: requestData);
+
+    final http.Response response = await http.get(Uri.parse(url));
+    // final http.Response response = await http.get(
+    //   Uri.parse(url),
+    //   //url as Uri,
+    //   headers: {'Content-Type': 'application/json'},
+    // );
+    if (response.statusCode == 200) {
+      print("stay success");
+      final Map<String, dynamic> responseBody = json.decode(response.body);
+      return responseBody;
+    } else {
+      print(
+          'RemoteAPI_callProtect Request failed with status: ${response.statusCode}');
+      return null;
+    }
+  }
+
+  Future logOut(String username) async {
+    const url = '$host/user/logout'; // 替换为实际的登录接口URL
+    final Map<String, dynamic> requestData = {
+      'userName': username,
+    };
+    final http.Response response = await http.post(
+      Uri.parse(url),
+      body: jsonEncode(requestData),
+      headers: {'Content-Type': 'application/json'},
+    );
+    if (response.statusCode == 200) {
+      print("log out success");
+      final Map<String, dynamic> responseBody = json.decode(response.body);
+      return responseBody;
+    } else {
+      print(
+          'RemoteAPI_logOut Request failed with status: ${response.statusCode}');
+      return null;
+    }
+  }
 }

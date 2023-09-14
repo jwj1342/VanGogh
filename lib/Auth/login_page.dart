@@ -99,31 +99,37 @@ class _LoginPageState extends State<LoginPage> {
           margin: const EdgeInsets.fromLTRB(40, 0, 40, 0),
           child: ElevatedButton(
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(const Color(0x99252323)),
+                backgroundColor:
+                    MaterialStateProperty.all(const Color(0x99252323)),
                 // 设置圆角
                 shape: MaterialStateProperty.all(const StadiumBorder(
                     side: BorderSide(style: BorderStyle.none)))),
             child: Text('登录',
                 style: Theme.of(context).primaryTextTheme.titleLarge),
-            onPressed: ()  async {
+            onPressed: () async {
               // 表单校验通过才会继续执行
               if ((_formKey.currentState as FormState).validate()) {
                 (_formKey.currentState as FormState).save();
-
-                User? user = await RemoteAPI(context).login(_phone, _password);
-                if (user != null&&user.loginName!=null) {
-                  final SharedPreferences prefs = await SharedPreferences.getInstance();
-                  prefs.setString('Username', user.loginName.toString());
-                  //prefs.setString('AvatarUrl', user.avatarUrl.toString());
-                  prefs.setString('Following', user.following.toString());
-                  prefs.setString('Likes', user.likes.toString());
-                  prefs.setString('Collects', user.collects.toString());
+                var responseBody =
+                    await RemoteAPI(context).login(_phone, _password);
+                print(responseBody);
+                if (responseBody.containsKey('username')) {
+                  final String username = responseBody['username'];
+                  final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  prefs.setString('Username', username);
+                  // prefs.setString('AvatarUrl', user.avatarUrl.toString());
+                  prefs.setString('Following', "3");
+                  prefs.setString('Likes', "22");
+                  prefs.setString('Collects', "13");
                   prefs.setBool('isLoggedIn', true);
                   if (mounted) {
-                    Navigator.pushReplacement(
+                    Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const MyStatefulWidget()),
+                        builder: (context) => const MyStatefulWidget(),
+                      ),
+                      (route) => false, // 返回 false 禁止返回上一步
                     );
                   }
                 } else {
