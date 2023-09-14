@@ -5,6 +5,7 @@ import 'package:vangogh/Auth/login_page.dart';
 import 'package:vangogh/Common/RemoteAPI.dart';
 
 class MyPage extends StatefulWidget {
+  const MyPage({super.key});
   @override
   _MyPageState createState() => _MyPageState();
 }
@@ -113,7 +114,9 @@ class _MyPageState extends State<MyPage> {
                     var responseBody =
                         await RemoteAPI(context).logOut(username!);
                     if (responseBody.containsKey('username')) {
-                      print("退出成功");
+                      if (kDebugMode) {
+                        print("退出成功");
+                      }
                       final SharedPreferences prefs =
                           await SharedPreferences.getInstance();
                       prefs.remove('isLoggedIn');
@@ -126,7 +129,9 @@ class _MyPageState extends State<MyPage> {
                           MaterialPageRoute(
                               builder: (context) => const LoginPage()));
                     } else {
-                      print("退出失败");
+                      if (kDebugMode) {
+                        print("退出失败");
+                      }
                     }
                   }),
                 ],

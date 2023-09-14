@@ -1,5 +1,4 @@
-import 'dart:ffi';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vangogh/Auth/login_page.dart';
@@ -63,21 +62,24 @@ class MyApp extends StatelessWidget {
     // 根据当前登录状态决定显示的页面
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String? username = prefs.getString('Username');
-    print("main_username:");
-    print(username);
+    if (kDebugMode) {
+      print("main_username:");
+      print(username);
+    }
     if(username!=null){
       return const MyStatefulWidget();
     }
     if(username==null){
       return const LoginPage();
     }
-    var responseBody = await RemoteAPI(context).callProtect(username!);
-    print("main_responseBody");
-    print(responseBody);
+    var responseBody = await RemoteAPI(context).callProtect(username);
+    if (kDebugMode) {
+      print("main_responseBody");
+      print(responseBody);
+    }
     if (responseBody == null) {
       return const LoginPage();
     } else if (responseBody.containsKey('username')) {
-      print("main_持久化成功");
       final String username = responseBody['username'];
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('Username', username);
@@ -87,7 +89,9 @@ class MyApp extends StatelessWidget {
       prefs.setBool('isLoggedIn', true);
       return const MyStatefulWidget();
     } else {
-      print("main_登录状态已销毁");
+      if (kDebugMode) {
+        print("main_登录状态已销毁");
+      }
       // 未登录，跳转到登录页
       return const LoginPage();
     }
@@ -106,7 +110,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   static final List<Widget> _widgetOptions = <Widget>[
     const HomePage(),
     const CreatePage(),
-    MyPage(),
+    const MyPage(),
   ];
 
   void _onItemTapped(int index) {

@@ -1,12 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:vangogh/Auth/forgetPassword_page.dart';
 import 'package:vangogh/Auth/register_page.dart';
 import 'package:vangogh/main.dart';
-
 import '../Common/RemoteAPI.dart';
-import '../Model/User.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -112,7 +109,9 @@ class _LoginPageState extends State<LoginPage> {
                 (_formKey.currentState as FormState).save();
                 var responseBody =
                     await RemoteAPI(context).login(_phone, _password);
-                print(responseBody);
+                if (kDebugMode) {
+                  print(responseBody);
+                }
                 if (responseBody.containsKey('username')) {
                   final String username = responseBody['username'];
                   final SharedPreferences prefs =

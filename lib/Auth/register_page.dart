@@ -1,11 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'package:flutter/services.dart';
-import 'package:flutter/gestures.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../Common/RemoteAPI.dart';
-import '../Model/User.dart';
 import '../main.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -65,7 +61,7 @@ class _RegisterPageState extends State<RegisterPage> {
             });
           },
         ),
-        Text("我已阅读并同意用户服务协议和隐私政策")
+        const Text("我已阅读并同意用户服务协议和隐私政策")
       ],
     );
   }
@@ -79,12 +75,12 @@ class _RegisterPageState extends State<RegisterPage> {
           margin: const EdgeInsets.fromLTRB(40, 0, 40, 0),
           child: ElevatedButton(
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Color(0x99252323)),
+                backgroundColor: MaterialStateProperty.all(const Color(0x99252323)),
                 // 设置圆角
                 shape: MaterialStateProperty.all(const StadiumBorder(
                     side: BorderSide(style: BorderStyle.none)))),
             child:
-                Text('注册', style: Theme.of(context).primaryTextTheme.headline6),
+                Text('注册', style: Theme.of(context).primaryTextTheme.titleLarge),
             onPressed: () async {
               //要同意用户协议
               if (_isChecked != false) {
@@ -93,11 +89,15 @@ class _RegisterPageState extends State<RegisterPage> {
                   (_formKey.currentState as FormState).save();
                   var responseBody =
                       await RemoteAPI(context).register(_phone, _password);
-                  print(responseBody);
+                  if (kDebugMode) {
+                    print(responseBody);
+                  }
                   if (responseBody.containsKey('userName')) {
                     final String username = responseBody['userName'];
-                    print("register_username:");
-                    print(username);
+                    if (kDebugMode) {
+                      print("register_username:");
+                      print(username);
+                    }
                     final SharedPreferences prefs =
                         await SharedPreferences.getInstance();
                     prefs.setString('Username', username);
@@ -116,13 +116,15 @@ class _RegisterPageState extends State<RegisterPage> {
                       );
                     }
                   } else {
-                    print("注册失败");
+                    if (kDebugMode) {
+                      print("注册失败");
+                    }
                   }
                 }
               } else {
                 // 广播：未同意用户协议
                 ScaffoldMessenger.of(context)
-                    .showSnackBar(SnackBar(content: Text('请同意用户协议')));
+                    .showSnackBar(const SnackBar(content: Text('请同意用户协议')));
               }
             },
           ),
@@ -146,7 +148,7 @@ class _RegisterPageState extends State<RegisterPage> {
         }
       },
       decoration: InputDecoration(
-        icon: Icon(Icons.lock_clock_outlined),
+        icon: const Icon(Icons.lock_clock_outlined),
         hintText: "再次确认密码",
         suffixIcon: IconButton(
           icon: Icon(
@@ -173,16 +175,14 @@ class _RegisterPageState extends State<RegisterPage> {
       controller: _pass,
       onSaved: (value) => _password = value!,
       validator: (value) {
-        //bool status = ValidatorUtils.isMobileExact(value!);
         if (value == null || value.isEmpty) {
           return '密码不能为空';
-        }
-        if (value.length < 6) {
+        } else if (value.length < 6) {
           return '密码长度不能小于6位';
         }
       },
       decoration: InputDecoration(
-        icon: Icon(Icons.lock_clock_outlined),
+        icon: const Icon(Icons.lock_clock_outlined),
         hintText: "请输入密码",
         suffixIcon: IconButton(
           icon: Icon(
@@ -211,7 +211,7 @@ class _RegisterPageState extends State<RegisterPage> {
           return '用户名不能为空';
         }
       },
-      decoration: InputDecoration(
+      decoration: const InputDecoration(
         icon: Icon(Icons.account_circle_outlined),
         hintText: "请输入用户名",
       ),

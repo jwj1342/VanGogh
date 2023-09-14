@@ -1,21 +1,12 @@
-import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
+import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:io';
-import 'dart:io';
-import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vangogh/Common/SaveImageFromGallery.dart';
 import 'package:vangogh/Common/ShareImageFromGallery.dart';
-import 'package:vangogh/Model/User.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 import '../Common/RemoteAPI.dart';
 
@@ -57,15 +48,17 @@ class _CreatePageState extends State<CreatePage>
         _imageWidgets=[];
         for(String imageString in imagePaths){
           //_imageWidgets.add(Image.network(imageString));
-          _imageWidgets.add(CachedNetworkImage(imageUrl:imageString));
+          _imageWidgets.add(CachedNetworkImage(placeholder: (context, url) => const CircularProgressIndicator(),imageUrl:imageString));
         }
       });
-      _imageStrings=imagePaths!;
+      _imageStrings=imagePaths;
     }else{
       setState(() {_imageWidgets=[];}); // 删除最后一张图片清空页面
     }
 
-    print("此时图片："+_imageWidgets.toString());
+    if (kDebugMode) {
+      print("此时图片："+_imageWidgets.toString());
+    }
   }
 
   //dispose()方法是销毁状态，当State对象从树中被移除时，会调用此回调。
@@ -77,11 +70,7 @@ class _CreatePageState extends State<CreatePage>
 
 
   void _saveImageWidgets() async {
-    //print(_imageStrings);
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    // if(_imageWidgets!=null&&_imageWidgets.isNotEmpty){
-    //   _imageStrings=prefs.getStringList('imagePaths')!;
-    // }
     prefs.setStringList('imagePaths', _imageStrings);
   }
 
@@ -94,6 +83,9 @@ class _CreatePageState extends State<CreatePage>
         imagePaths.removeAt(index);
       }
       prefs.setStringList('imagePaths', imagePaths!);
+
+      _imageStrings.removeAt(index);
+      _imageWidgets.removeAt(index);
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("删除成功"),
       ));
@@ -133,8 +125,10 @@ class _CreatePageState extends State<CreatePage>
       _username = prefs.getString('Username') ?? "你是游客吧";
     });
     if (_username == "你是游客吧") isVisitor = true;
-    print(_username!);
-    print(isVisitor);
+    if (kDebugMode) {
+      print(_username!);
+      print(isVisitor);
+    }
   }
 
   Future<void> _showInputDialog() async {
@@ -167,17 +161,19 @@ class _CreatePageState extends State<CreatePage>
       },
     ).then((value) async {
       if (value != null) {
-        print("image");
-        print(value);
+        if (kDebugMode) {
+          print("image");
+          print(value);
+        }
         var responseBody = await RemoteAPI(context)
-            .uploadImageV2(_image!, _username!,  value); //传递数据
+            .uploadImage(_image!, _username!,  value); //传递数据
         String imageUrl = responseBody!['imageUrlAfter']; //这一步是将返回数据转换成json格式
         setState(() {
-          // _imageWidgets.add(Image.memory(Uint8List.fromList(bytes!)));
-          //_imageWidgets.add(Image.network(imageUrl)); //这一步是否能成功有待考量
           _imageStrings.add(imageUrl);
         });
-        print(_imageStrings);
+        if (kDebugMode) {
+          print(_imageStrings);
+        }
         _saveImageWidgets();
         _loadImageWidgets();
       }

@@ -5,8 +5,6 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 
-import 'package:vangogh/Model/User.dart';
-
 class RemoteAPI {
   static const host = 'http://121.36.86.111:8080';
   RemoteAPI(BuildContext? context);
@@ -21,14 +19,16 @@ class RemoteAPI {
     };
     var jsonb = json.encoder.convert(body);
     final response =
-        await http.post(Uri.parse(url), headers: headers, body: jsonb);
+    await http.post(Uri.parse(url), headers: headers, body: jsonb);
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> responseBody = json.decode(response.body);
       return responseBody;
       // return true;
     } else {
-      print('Request failed with status: ${response.statusCode}');
+      if (kDebugMode) {
+        print('Request failed with status: ${response.statusCode}');
+      }
       return null;
     }
   }
@@ -39,18 +39,24 @@ class RemoteAPI {
       'userName': username,
       'password': password,
     };
-    print(requestData);
+    if (kDebugMode) {
+      print(requestData);
+    }
     final http.Response response = await http.post(
       Uri.parse(url),
       body: jsonEncode(requestData),
       headers: {'Content-Type': 'application/json'},
     );
     if (response.statusCode == 200) {
-      print("register success");
+      if (kDebugMode) {
+        print("register success");
+      }
       final Map<String, dynamic> responseBody = json.decode(response.body);
       return responseBody;
     } else {
-      print('Request failed with status: ${response.statusCode}');
+      if (kDebugMode) {
+        print('Request failed with status: ${response.statusCode}');
+      }
       return null;
     }
   }
@@ -58,23 +64,22 @@ class RemoteAPI {
   Future<List<Map<String, dynamic>>> getRecommendation() async {
     try {
       var url = '$host/image/getRecommend'; // 替换为实际的登录接口URL
-
       var response = await http.get(Uri.parse(url));
-      print("API_getRecommend");
-print(response.statusCode);
+      if (kDebugMode) {
+        print("API_getRecommend");
+      }
+      if (kDebugMode) {
+        print(response.statusCode);
+      }
       if (response.statusCode == 200) {
         String responseBody = utf8.decode(response.bodyBytes);
-        print(responseBody);
+        if (kDebugMode) {
+          print(responseBody);
+        }
         List<dynamic> decodedBody = json.decode(responseBody);
         List<Map<String, dynamic>> result = [];
-        if (decodedBody is List) {
-          result =
-              decodedBody.map((item) => item as Map<String, dynamic>).toList();
-        } else {
-          if (kDebugMode) {
-            print('Invalid response body format');
-          }
-        }
+        result =
+            decodedBody.map((item) => item as Map<String, dynamic>).toList();
         return result;
       } else {
         if (kDebugMode) {
@@ -90,29 +95,7 @@ print(response.statusCode);
     }
   }
 
-  // Future<List<int>?> uploadImageV1(File imageFile) async {
-  //   if (kDebugMode) {
-  //     print('开始上传图片：${imageFile.path}');
-  //   }
-  //   var request = http.Request(
-  //       'POST',
-  //       Uri.parse(
-  //           'http://demo-test-vangogh-xrgfpupeat.cn-hangzhou.fcapp.run/test'));
-  //   List<int> imageBytes = await imageFile.readAsBytes();
-  //   var headers = {'Content-Type': 'image/jpeg'};
-  //   request.bodyBytes = imageBytes;
-  //   request.headers.addAll(headers);
-  //   http.StreamedResponse response = await request.send();
-  //
-  //   if (response.statusCode == 200) {
-  //     List<int> bytes = await response.stream.toBytes();
-  //     return bytes;
-  //   } else {
-  //     return null;
-  //   }
-  // }
-
-  Future<Map<String, dynamic>?> uploadImageV2(File imageFile, String username,String title) async {
+  Future<Map<String, dynamic>?> uploadImage(File imageFile, String username,String title) async {
     const url='$host/image/upload';
     var request = http.MultipartRequest('POST', Uri.parse(url));
 
@@ -135,39 +118,33 @@ print(response.statusCode);
         // 处理请求失败的情况
         if (kDebugMode) {
           final Map<String, dynamic> responseBody = json.decode(response.body);
-          print('Image upload failed with status ${response.statusCode}.');
+          print('Image upload failed with status ${responseBody.values}.');
         }
         return null;
       }
     } catch (e) {
       // 处理异常
-      print('Image upload failed with error $e.');
+      if (kDebugMode) {
+        print('Image upload failed with error $e.');
+      }
       return null;
     }
   }
 
   Future callProtect(String username) async {
-  const url = '$host/user/protected'; // 替换为实际的登录接口URL
-
-    // final Map<String, dynamic> requestData = {
-    //   'userName': username,
-    // };
-
-   // final Uri apiUrl = Uri.parse('\$host/user/protected').replace(queryParameters: requestData);
-
+    const url = '$host/user/protected'; // 替换为实际的登录接口URL
     final http.Response response = await http.get(Uri.parse(url));
-    // final http.Response response = await http.get(
-    //   Uri.parse(url),
-    //   //url as Uri,
-    //   headers: {'Content-Type': 'application/json'},
-    // );
     if (response.statusCode == 200) {
-      print("stay success");
+      if (kDebugMode) {
+        print("stay success");
+      }
       final Map<String, dynamic> responseBody = json.decode(response.body);
       return responseBody;
     } else {
-      print(
+      if (kDebugMode) {
+        print(
           'RemoteAPI_callProtect Request failed with status: ${response.statusCode}');
+      }
       return null;
     }
   }
@@ -183,12 +160,16 @@ print(response.statusCode);
       headers: {'Content-Type': 'application/json'},
     );
     if (response.statusCode == 200) {
-      print("log out success");
+      if (kDebugMode) {
+        print("log out success");
+      }
       final Map<String, dynamic> responseBody = json.decode(response.body);
       return responseBody;
     } else {
-      print(
+      if (kDebugMode) {
+        print(
           'RemoteAPI_logOut Request failed with status: ${response.statusCode}');
+      }
       return null;
     }
   }
