@@ -116,7 +116,7 @@ class _ForgetPasswordPageState extends State<ForgetPasswordPage> {
               // 表单校验通过才会继续执行
               if ((_formKey.currentState as FormState).validate()) {
                 (_formKey.currentState as FormState).save();
-                //TODO 执行登录方法
+                // 执行登录方法
                 if (kDebugMode) {
                   print('phone: $_phone, password: $_password');
                 }

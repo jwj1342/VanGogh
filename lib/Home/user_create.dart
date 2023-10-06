@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'UserCreation.dart';
@@ -17,6 +18,9 @@ class _UserCreateState extends State<UserCreate> {
   @override
   void initState() {
     super.initState();
+    if (kDebugMode) {
+      print("getCommended初始化");
+    }
     // 从后端获取数据并
     fetchData();
   }
@@ -25,6 +29,9 @@ class _UserCreateState extends State<UserCreate> {
     List<Map<String, dynamic>> backendData = await RemoteAPI(context).getRecommendation();
     if (mounted) { // 检查当前 State 对象是否仍然存在于 widget 树中
       setState(() {
+        if (kDebugMode) {
+          print("item初始化");
+        }
         items = UserCreationAdapter.adapt(backendData);
       });
     }
@@ -76,6 +83,7 @@ class CustomWellHorizontalInfinite extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return InkWell(
       onTap: onTap,
       child: Container(

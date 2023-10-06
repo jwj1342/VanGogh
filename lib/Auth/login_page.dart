@@ -1,12 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:vangogh/Auth/forgetPassword_page.dart';
 import 'package:vangogh/Auth/register_page.dart';
 import 'package:vangogh/main.dart';
-
 import '../Common/RemoteAPI.dart';
-import '../Model/User.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -52,7 +49,6 @@ class _LoginPageState extends State<LoginPage> {
             buildPhoneTextField(), // 输入手机号
             const SizedBox(height: 30),
             buildPasswordTextField(context), // 输入密码
-            buildForgetPasswordText(context), // 忘记密码
             const SizedBox(height: 150),
             buildLoginButton(context), // 登录按钮
             const SizedBox(height: 30),
@@ -100,31 +96,39 @@ class _LoginPageState extends State<LoginPage> {
           margin: const EdgeInsets.fromLTRB(40, 0, 40, 0),
           child: ElevatedButton(
             style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(const Color(0x99252323)),
+                backgroundColor:
+                    MaterialStateProperty.all(const Color(0x99252323)),
                 // 设置圆角
                 shape: MaterialStateProperty.all(const StadiumBorder(
                     side: BorderSide(style: BorderStyle.none)))),
             child: Text('登录',
                 style: Theme.of(context).primaryTextTheme.titleLarge),
-            onPressed: ()  async {
+            onPressed: () async {
               // 表单校验通过才会继续执行
               if ((_formKey.currentState as FormState).validate()) {
                 (_formKey.currentState as FormState).save();
-
-                User? user = await RemoteAPI(context).login(_phone, _password);
-                if (user != null&&user.loginName!=null) {
-                  final SharedPreferences prefs = await SharedPreferences.getInstance();
-                  prefs.setString('Username', user.loginName.toString());
-                  prefs.setString('AvatarUrl', user.avatarUrl.toString());
-                  prefs.setString('Following', user.following.toString());
-                  prefs.setString('Likes', user.likes.toString());
-                  prefs.setString('Collects', user.collects.toString());
+                var responseBody =
+                    await RemoteAPI(context).login(_phone, _password);
+                if (kDebugMode) {
+                  print(responseBody);
+                }
+                if (responseBody.containsKey('username')) {
+                  final String username = responseBody['username'];
+                  final SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  prefs.setString('Username', username);
+                  // prefs.setString('AvatarUrl', user.avatarUrl.toString());
+                  prefs.setString('Following', "3");
+                  prefs.setString('Likes', "22");
+                  prefs.setString('Collects', "13");
                   prefs.setBool('isLoggedIn', true);
                   if (mounted) {
-                    Navigator.pushReplacement(
+                    Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const MyStatefulWidget()),
+                        builder: (context) => const MyStatefulWidget(),
+                      ),
+                      (route) => false, // 返回 false 禁止返回上一步
                     );
                   }
                 } else {
@@ -135,26 +139,6 @@ class _LoginPageState extends State<LoginPage> {
               }
             },
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget buildForgetPasswordText(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Align(
-        alignment: Alignment.centerRight,
-        child: TextButton(
-          onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return const ForgetPasswordPage(); //要跳转的页面
-            }));
-
-          },
-          key: const ValueKey('forget_password_text'),
-          child: const Text("忘记密码？",
-              style: TextStyle(fontSize: 14, color: Colors.blue)),
         ),
       ),
     );
@@ -203,13 +187,13 @@ class _LoginPageState extends State<LoginPage> {
       onSaved: (value) => _phone = value!,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return '手机号/用户名不能为空';
+          return '用户名不能为空';
         }
         return null;
       },
       decoration: const InputDecoration(
         icon: Icon(Icons.account_circle_outlined),
-        hintText: "请输入手机号/用户名",
+        hintText: "请输入用户名",
       ),
     );
   }

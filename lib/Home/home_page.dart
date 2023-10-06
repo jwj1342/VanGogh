@@ -12,7 +12,9 @@ class HomePage extends StatelessWidget {
     SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
     )); //透明状态栏
+    double screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: const Color(0xA6ECE8B9),
         body: Padding(
             padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 30),
@@ -48,8 +50,6 @@ class HomePage extends StatelessWidget {
                     child: ListView(
                         scrollDirection: Axis.horizontal,
                         children: <Widget>[
-
-
                           CustomWellHorizonal(
 
                             onTap: () {
@@ -107,16 +107,15 @@ class HomePage extends StatelessWidget {
                           fontSize: 20.0,
                         ),
                       )),
-
-                  const SizedBox(
-                    height: 180,
-                    child: UserCreate(),
-                  ),
+                  Expanded(
+                    child:
+                    Container(
+                      height: screenHeight-300,
+                      child: const UserCreate(),
+                    ),)
                 ])));
   }
 }
-
-
 
 class CustomWellHorizonal extends StatelessWidget {
   const CustomWellHorizonal({
