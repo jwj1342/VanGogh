@@ -1,4 +1,4 @@
-<br />
+
 
 <p align="center">
     <img src="assets/Logo/LoginPageLogoPNG.png" alt="Logo" width="780" height="325">
@@ -25,10 +25,15 @@
 
 ## ☑️ Todo
 
-- [ ] todo1
-- [ ] todo2
+查看 Todo 请访问本项目的 [Projects](https://github.com/users/jwj1342/projects/4)
 
-## :person_frowning: 特别鸣谢
+欢迎提 Issue 和 Pull request。
+
+## ✍ 开发文档
+
+这里放置相关的文档链接
+
+## 🧑 特别鸣谢
 
 
 
