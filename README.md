@@ -5,9 +5,9 @@
   <p align="center">
     一个使用flutter构建的人工智能绘画社区
     <br />
-    <a href="" target="blank"><strong>💾 还没想好</strong></a>&nbsp;&nbsp;|&nbsp;&nbsp;
-    <a href="" target="blank"><strong>📦️ 还没想好</strong></a>&nbsp;&nbsp;|&nbsp;&nbsp;
-    <a href="" target="blank"><strong>💬 还没想好</strong></a>
+    <a href="" target="blank"><strong>💾 正在施工</strong></a>&nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="" target="blank"><strong>📦️ 正在施工</strong></a>&nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="" target="blank"><strong>💬 正在施工</strong></a>
     <br />
     <br />
   </p>
@@ -16,6 +16,7 @@
 
 - 使用flutter进行开发
 - 设计风格使用material 3
+- 完整的后端交互逻辑封装
 - brarabrab
 - 更多特性还在开发中
 
